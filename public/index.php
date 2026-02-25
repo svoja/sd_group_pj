@@ -46,12 +46,12 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
                     },
                     colors: {
                         obsidian: {
-                            bg: '#050505',
+                            bg: '#020202',
                             surface: '#0a0a0a',
-                            edge: 'rgba(255, 255, 255, 0.08)',
-                            muted: '#555555'
+                            edge: 'rgba(255, 0, 0, 0.12)',
+                            muted: '#666666'
                         },
-                        premium: '#a855f7'
+                        premium: '#e11d48'
                     }
                 }
             }

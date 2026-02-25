@@ -26,12 +26,18 @@ $result = $mysqli->query($query);
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                     colors: {
-                        'obsidian-bg': '#050505',
-                        'obsidian-surface': '#0a0a0a',
-                        'obsidian-edge': '#1a1a1a',
-                        'obsidian-muted': '#555',
-                        'premium': '#a855f7',
+                        obsidian: {
+                            bg: '#020202',
+                            surface: '#0a0a0a',
+                            edge: 'rgba(255, 0, 0, 0.12)',
+                            muted: '#666666'
+                        },
+                        premium: '#e11d48'
                     }
                 }
             }
