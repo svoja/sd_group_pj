@@ -7,11 +7,12 @@ if (!isset($_SESSION['logged_in'])) {
     exit;
 }
 // 3. Connect to the database
+require_once "../config/currency.php";
 require_once "../config/database.php";
 
 $user_id = $_SESSION['user_id'];
 $email = $_SESSION['email'];
-
+$role = $_SESSION['role'];
 // Fetch Customer Profile
 $stmt = $mysqli->prepare("SELECT customer_id, customer_code, contact_name, address, membership_level FROM customers WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);

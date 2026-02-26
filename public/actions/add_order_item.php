@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_subtotal = $calcResult['new_subtotal'] ? (float)$calcResult['new_subtotal'] : 0.00;
     $stmt->close();
 
-    // 5. FETCH CUSTOMER TIER TO CALCULATE 5% DISCOUNT
+    // 5. FETCH CUSTOMER TIER TO CALCULATE DISCOUNTS
     $stmt = $mysqli->prepare("
         SELECT o.special_discount, c.membership_level 
         FROM sale_orders o 
@@ -65,23 +65,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $orderData = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    // Calculate the 5% Membership Discount
+    // Calculate the Membership Discount
     $membership_discount = 0.00;
     if ($orderData['membership_level'] === 'PREMIUM') {
         $membership_discount = $new_subtotal * 0.05; // 5% off for Premium
     } elseif ($orderData['membership_level'] === 'ELITE') {
-        $membership_discount = $new_subtotal * 0.10; // Optional: 10% off for Elite
+        $membership_discount = $new_subtotal * 0.10; // 10% off for Elite
     }
 
-    $special_discount = (float)$orderData['special_discount'];
+    // --- NEW: 10% AUTOMATIC VOLUME DISCOUNT ---
+    if ($new_subtotal >= 610) {
+        // If they hit the $610 threshold, auto-fill the special discount with 10%
+        $special_discount = $new_subtotal * 0.10;
+    } else {
+        // Otherwise, keep whatever manual discount was already typed in
+        $special_discount = (float)$orderData['special_discount'];
+    }
     
     // Calculate Final Total
     $final_total = $new_subtotal - ($membership_discount + $special_discount);
     if ($final_total < 0) $final_total = 0; // Prevent negative totals
 
-    // 6. Update the Orders table with the calculated discount amount
-    $stmt = $mysqli->prepare("UPDATE sale_orders SET subtotal = ?, membership_discount = ?, total_amount = ? WHERE order_id = ?");
-    $stmt->bind_param("dddi", $new_subtotal, $membership_discount, $final_total, $order_id);
+    // 6. Update the Orders table (Notice we added special_discount = ? to this query)
+    $stmt = $mysqli->prepare("UPDATE sale_orders SET subtotal = ?, membership_discount = ?, special_discount = ?, total_amount = ? WHERE order_id = ?");
+    // "ddddi" = 4 decimals, 1 integer
+    $stmt->bind_param("ddddi", $new_subtotal, $membership_discount, $special_discount, $final_total, $order_id);
     $stmt->execute();
     $stmt->close();
 

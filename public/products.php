@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "../config/currency.php";
 require_once "../config/database.php";
 
 // 1. STRICT SECURITY GUARD
@@ -121,12 +122,11 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Cost ($)</label>
-                                <input type="number" step="0.01" name="cost_price" required placeholder="0.00"
+                                    <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Cost (<?= $_SESSION['currency'] ?>)</label>                                <input type="number" step="0.01" name="cost_price" required placeholder="0.00"
                                     class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white">
                             </div>
                             <div>
-                                <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Selling ($)</label>
+                                <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Selling (<?= $_SESSION['currency'] ?>)</label>
                                 <input type="number" step="0.01" name="selling_price" required placeholder="0.00"
                                     class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white text-premium">
                             </div>
@@ -207,8 +207,8 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                                     </td>
                                     
                                     <td class="px-6 py-5 font-mono text-xs">
-                                        <div class="text-white">SELL: <span class="text-premium font-bold">$<?= number_format($product['selling_price'], 2) ?></span></div>
-                                        <div class="text-[9px] text-obsidian-muted">COST: $<?= number_format($product['cost_price'], 2) ?></div>
+                                        <div class="text-white">SELL: <span class="text-premium font-bold"><?= formatCurrency($product['selling_price']) ?></span></div>
+                                        <div class="text-[9px] text-obsidian-muted">COST: <?= formatCurrency($product['cost_price']) ?></div>
                                     </td>
 
                                     <td class="px-6 py-5">

@@ -24,7 +24,18 @@
         </a>
     </div>
 
+    
+
     <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest">
+        <form action="actions/set_currency.php" method="POST" class="flex items-center gap-2">
+            <span class="text-[9px] text-obsidian-muted font-mono uppercase tracking-widest">Sys_Currency:</span>
+                <select name="currency" onchange="this.form.submit()" class="bg-obsidian-bg border border-obsidian-edge text-[10px] font-mono text-premium uppercase tracking-widest px-2 py-1 focus:outline-none focus:border-white transition-colors cursor-pointer">
+                    <option value="USD" <?= $_SESSION['currency'] == 'USD' ? 'selected' : '' ?>>USD ($)</option>
+                    <option value="THB" <?= $_SESSION['currency'] == 'THB' ? 'selected' : '' ?>>THB (฿)</option>
+                    <option value="JPY" <?= $_SESSION['currency'] == 'JPY' ? 'selected' : '' ?>>JPY (¥)</option>
+                </select>
+            <input type="hidden" name="return_url" value="<?= htmlspecialchars($_SERVER['REQUEST_URI']) ?>">
+        </form>
         <div class="flex flex-col items-end">
             <span class="text-[9px] text-obsidian-muted leading-none">Access_Level</span>
             <span class="text-white font-mono"><?= htmlspecialchars($_SESSION['role'] ?? 'guest') ?></span>

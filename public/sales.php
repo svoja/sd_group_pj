@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "../config/currency.php"; // <-- Added Currency Engine
 require_once "../config/database.php"; 
 
 // 1. STRICT SECURITY GUARD
@@ -150,7 +151,12 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                         </div>
 
                         <div>
-                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Special Discount ($)</label>
+                            <div class="flex justify-between items-end mb-2">
+                                <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted font-bold">Special Discount (USD Base)</label>
+                                <span class="text-[9px] font-mono text-obsidian-muted uppercase tracking-widest">
+                                    Format: <span class="text-white"><?= $_SESSION['currency'] ?></span>
+                                </span>
+                            </div>
                             <input type="number" step="0.01" name="special_discount" value="0.00" 
                                 class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white">
                         </div>
@@ -182,7 +188,6 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                             </thead>
                             <tbody class="divide-y divide-obsidian-edge">
                                 <?php
-                                // We added c.membership_level so we know WHY they got a discount
                                 $orderQuery = "
                                     SELECT o.*, c.contact_name, c.customer_code, c.membership_level, e.name as employee_name,
                                     (SELECT SUM(quantity) FROM sale_order_details WHERE order_id = o.order_id) as total_items
@@ -228,18 +233,18 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 
                                     <td class="px-6 py-5 font-mono text-xs">
                                         <div class="text-white mb-2 border-b border-obsidian-edge pb-1">
-                                            TOTAL: <span class="text-premium font-bold">$<?= number_format($order['total_amount'], 2) ?></span>
+                                            TOTAL: <span class="text-premium font-bold"><?= formatCurrency($order['total_amount']) ?></span>
                                         </div>
                                         <div class="text-[9px] text-obsidian-muted flex flex-col gap-1">
                                             <div>ITEMS: <span class="<?= $itemCount > 0 ? 'text-green-500' : 'text-red-500' ?>"><?= $itemCount ?></span></div>
                                             
                                             <?php if ($order['membership_discount'] > 0): ?>
-                                                <div class="text-blue-400">MEM (<?= htmlspecialchars($order['membership_level']) ?>): -$<?= number_format($order['membership_discount'], 2) ?></div>
+                                                <div class="text-blue-400">MEM (<?= htmlspecialchars($order['membership_level']) ?>): -<?= formatCurrency($order['membership_discount']) ?></div>
                                             <?php else: ?>
-                                                <div>MEM DISC: -$0.00</div>
+                                                <div>MEM DISC: -<?= formatCurrency(0) ?></div>
                                             <?php endif; ?>
 
-                                            <div>SPL DISC: -$<?= number_format($order['special_discount'], 2) ?></div>
+                                            <div>SPL DISC: -<?= formatCurrency($order['special_discount']) ?></div>
                                         </div>
                                     </td>
 

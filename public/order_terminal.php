@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "../config/currency.php"; // <-- ADDED CURRENCY ENGINE
 require_once "../config/database.php";
 
 // Strict Security Guard
@@ -68,7 +69,7 @@ if (!$order) {
 
         <div class="lg:w-1/3 flex flex-col gap-6 anim-load" style="animation-delay: 0.1s;">
             
-            <div class="bg-obsidian-surface border border-obsidian-edge p-6 relative">
+            <div class="bg-obsidian-surface border border-obsidian-edge p-6 relative shadow-2xl shadow-black">
                 <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">Active_Cart</div>
                 <h2 class="text-xl font-black uppercase tracking-tighter mb-4 border-l-4 border-premium pl-4">Order_Manifest</h2>
                 
@@ -81,7 +82,7 @@ if (!$order) {
             </div>
 
             <?php if (isset($_GET['status'])): ?>
-                <div class="p-4 bg-obsidian-bg border border-obsidian-edge font-mono text-[10px] uppercase tracking-widest text-premium">
+                <div class="p-4 bg-obsidian-bg border border-obsidian-edge font-mono text-[10px] uppercase tracking-widest text-premium shadow-2xl shadow-black">
                     <?php 
                         if ($_GET['status'] == 'item_added') echo "[ SYS: COMPONENT_APPENDED ]";
                         if ($_GET['status'] == 'item_updated') echo "[ SYS: QUANTITY_RECALIBRATED ]";
@@ -91,20 +92,24 @@ if (!$order) {
                 </div>
             <?php endif; ?>
 
-            <div class="bg-obsidian-surface border border-obsidian-edge p-6 flex-grow">
+            <div class="bg-obsidian-surface border border-obsidian-edge p-6 flex-grow shadow-2xl shadow-black">
                 <h3 class="text-sm font-black uppercase tracking-widest mb-6 text-premium">Add_Component</h3>
                 
                 <form action="actions/add_order_item.php" method="POST" class="space-y-4">
                     <input type="hidden" name="order_id" value="<?= $order_id ?>">
 
                     <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Select Component</label>
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted font-bold">Select Component</label>
+                            <span class="text-[9px] font-mono text-obsidian-muted uppercase tracking-widest">Format: <span class="text-white"><?= $_SESSION['currency'] ?></span></span>
+                        </div>
                         <select name="product_id" required class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-xs font-mono focus:outline-none focus:border-premium transition-colors text-white appearance-none">
                             <option value="" disabled selected>-- Inventory Matrix --</option>
                             <?php
                             $products = $mysqli->query("SELECT product_id, product_code, product_name, selling_price, stock_qty FROM products WHERE stock_qty > 0 ORDER BY product_name ASC");
                             while ($p = $products->fetch_assoc()) {
-                                echo "<option value='{$p['product_id']}'>{$p['product_code']} - {$p['product_name']} [Q: {$p['stock_qty']}] ($" . number_format($p['selling_price'], 2) . ")</option>";
+                                // Updated to use formatCurrency() in the dropdown
+                                echo "<option value='{$p['product_id']}'>{$p['product_code']} - {$p['product_name']} [Q: {$p['stock_qty']}] (" . formatCurrency($p['selling_price']) . ")</option>";
                             }
                             ?>
                         </select>
@@ -124,7 +129,7 @@ if (!$order) {
         </div>
 
         <div class="lg:w-2/3 flex flex-col anim-load" style="animation-delay: 0.2s;">
-            <div class="bg-obsidian-surface border border-obsidian-edge flex-grow flex flex-col">
+            <div class="bg-obsidian-surface border border-obsidian-edge flex-grow flex flex-col shadow-2xl shadow-black">
                 <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                     <h2 class="text-xl font-black uppercase tracking-tighter">Acquisition_List</h2>
                     <a href="sales.php" class="text-[10px] font-black uppercase tracking-widest text-obsidian-muted hover:text-white transition-colors"><- Back to Ledger</a>
@@ -175,8 +180,8 @@ if (!$order) {
                                     </form>
                                 </td>
                                 
-                                <td class="px-4 py-4 text-right font-mono text-xs text-obsidian-muted">$<?= number_format($item['unit_price'], 2) ?></td>
-                                <td class="px-4 py-4 text-right font-mono text-sm font-bold text-white">$<?= number_format($item['total_price'], 2) ?></td>
+                                <td class="px-4 py-4 text-right font-mono text-xs text-obsidian-muted"><?= formatCurrency($item['unit_price']) ?></td>
+                                <td class="px-4 py-4 text-right font-mono text-sm font-bold text-white"><?= formatCurrency($item['total_price']) ?></td>
                                 
                                 <td class="px-4 py-4 text-right">
                                     <a href="actions/remove_order_item.php?detail_id=<?= $item['detail_id'] ?>&order_id=<?= $order_id ?>" 
@@ -197,19 +202,19 @@ if (!$order) {
                     <div class="flex justify-end mb-2">
                         <div class="w-64 flex justify-between text-xs font-mono text-obsidian-muted">
                             <span>SUBTOTAL:</span>
-                            <span>$<?= number_format($order['subtotal'], 2) ?></span>
+                            <span><?= formatCurrency($order['subtotal']) ?></span>
                         </div>
                     </div>
                     <div class="flex justify-end mb-4 border-b border-obsidian-edge pb-4">
                         <div class="w-64 flex justify-between text-xs font-mono text-premium">
                             <span>DISCOUNT:</span>
-                            <span>-$<?= number_format($order['membership_discount'] + $order['special_discount'], 2) ?></span>
+                            <span>-<?= formatCurrency($order['membership_discount'] + $order['special_discount']) ?></span>
                         </div>
                     </div>
                     <div class="flex justify-end">
                         <div class="w-64 flex justify-between text-lg font-black tracking-tighter">
                             <span>FINAL:</span>
-                            <span>$<?= number_format($order['total_amount'], 2) ?></span>
+                            <span><?= formatCurrency($order['total_amount']) ?></span>
                         </div>
                     </div>
                 </div>

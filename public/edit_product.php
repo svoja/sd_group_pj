@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "../config/currency.php"; // <--- ADD THIS LINE!
 require_once "../config/database.php";
 
 // Security Check
@@ -84,22 +85,34 @@ if (!$product) {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Cost ($)</label>
+                        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-end mb-2 gap-1">
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted font-bold">Cost (USD Base)</label>
+                            <span class="text-[9px] font-mono text-obsidian-muted uppercase tracking-widest">
+                                Local: <span class="text-white"><?= formatCurrency($product['cost_price']) ?></span>
+                            </span>
+                        </div>
                         <input type="number" step="0.01" name="cost_price" required value="<?= htmlspecialchars($product['cost_price']) ?>"
-                               class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white">
+                            class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white">
                     </div>
+
                     <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Selling ($)</label>
+                        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-end mb-2 gap-1">
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted font-bold">Selling (USD Base)</label>
+                            <span class="text-[9px] font-mono text-obsidian-muted uppercase tracking-widest">
+                                Local: <span class="text-premium font-bold"><?= formatCurrency($product['selling_price']) ?></span>
+                            </span>
+                        </div>
                         <input type="number" step="0.01" name="selling_price" required value="<?= htmlspecialchars($product['selling_price']) ?>"
-                               class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-premium font-bold">
+                            class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-premium font-bold">
                     </div>
-                    <div>
-                        <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Stock Level</label>
-                        <input type="number" name="stock_qty" required value="<?= htmlspecialchars($product['stock_qty']) ?>"
-                               class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white">
-                    </div>
+                </div>
+
+                <div class="mb-6 w-full md:w-1/2 md:pr-3">
+                    <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Stock Level</label>
+                    <input type="number" name="stock_qty" required value="<?= htmlspecialchars($product['stock_qty']) ?>"
+                        class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-bold focus:outline-none focus:border-premium transition-colors text-white">
                 </div>
 
                 <div>
