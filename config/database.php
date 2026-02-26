@@ -1,9 +1,9 @@
 <?php
-$host = "localhost";
+$host = "127.0.0.1";
 $username = "root";
-$password = "2549";
+$password = "";
 $database = "group_pj";
-$mysqli = new mysqli($host, $username, $password, $database);
+$mysqli = new mysqli("127.0.0.1", "root", "", "group_pj");
 
 // Check connection
 if ($mysqli -> connect_errno) {

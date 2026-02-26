@@ -1,18 +1,25 @@
 <?php
 session_start();
-
-// 1. Auth Guard
-if (!isset($_SESSION['logged_in'])) { header("Location: login.php"); exit; }
-if ($_SESSION['role'] !== 'employee') { header("Location: index.php"); exit; }
-
 require_once "../config/database.php";
 
-$query = "SELECT c.customer_id, c.customer_code, c.contact_name, c.membership_level, c.created_at, u.email 
-          FROM customers c
-          JOIN users u ON c.user_id = u.user_id
-          ORDER BY c.created_at DESC";
+// 1. STRICT SECURITY GUARD
+if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'employee') {
+    header("Location: ../index.php"); 
+    exit;
+}
 
-$result = $mysqli->query($query);
+$user_id = $_SESSION['user_id'];
+
+// 2. Fetch EMPLOYEE profile data for the header
+$stmt = $mysqli->prepare("SELECT employee_code, name, position FROM employees WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$employeeProfile = $result->fetch_assoc();
+
+$name = $employeeProfile['name'] ?? 'UNIDENTIFIED_STAFF';
+$position = $employeeProfile['position'] ?? 'UNASSIGNED_UNIT';
+$code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 ?>
 
 <!DOCTYPE html>
@@ -20,144 +27,175 @@ $result = $mysqli->query($query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entity Registry | ARAI MOTO</title>
+    <title>Client Ledger | ARAI MOTO</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
                     colors: {
-                        obsidian: {
-                            bg: '#020202',
-                            surface: '#0a0a0a',
-                            edge: 'rgba(255, 0, 0, 0.12)',
-                            muted: '#666666'
-                        },
+                        obsidian: { bg: '#020202', surface: '#0a0a0a', edge: 'rgba(255, 0, 0, 0.12)', muted: '#666666' },
                         premium: '#e11d48'
                     }
                 }
             }
         }
     </script>
+
     <style>
-        /* Custom animation for the "Boot" effect */
-        @keyframes slideUpFade {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        body {
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(225, 29, 72, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
         }
-
-        .anim-load {
-            animation: slideUpFade 0.8s ease-out forwards;
+        @keyframes tectonicRise {
+            from { opacity: 0; transform: translateY(40px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-
-        /* Delaying the table body rows for a staggered entrance */
-        .stagger-row {
-            opacity: 0;
-            animation: slideUpFade 0.5s ease-out forwards;
-        }
+        .anim-load { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020202; }
+        ::-webkit-scrollbar-thumb { background: #e11d48; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-obsidian-bg text-white font-sans min-h-screen">
+
+<body class="bg-obsidian-bg text-white font-sans min-h-screen overflow-x-hidden selection:bg-premium selection:text-white">
 
     <?php include 'partials/nav.php'; ?>
 
-    <main class="max-w-[1400px] mx-auto py-16 px-8">
-        
-        <header class="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6 anim-load" style="animation-delay: 0.1s;">
-            <div class="border-l-2 border-premium pl-6">
-                <p class="text-premium uppercase tracking-[0.4em] text-[10px] mb-2 font-bold">// DATABASE_MANAGEMENT</p>
-                <h1 class="text-4xl font-black tracking-tighter uppercase">Entity Registry</h1>
+    <main class="max-w-[1400px] mx-auto py-20 px-8">
+
+        <?php if (isset($_GET['status'])): ?>
+            <div class="mb-6 p-4 bg-obsidian-surface border-l-4 border-premium font-mono text-[10px] uppercase tracking-widest anim-load">
+                <?php 
+                    if ($_GET['status'] == 'registered') echo "[ STATUS: NEW_CLIENT_REGISTERED ]";
+                    if ($_GET['status'] == 'updated') echo "[ STATUS: CLIENT_DATA_RECALIBRATED ]";
+                    if ($_GET['status'] == 'deleted') echo "[ STATUS: CLIENT_PURGED_FROM_SYSTEM ]";
+                    if ($_GET['status'] == 'db_error') echo "<span class='text-red-500'>[ ERROR: DATABASE_SYNC_FAILURE ]</span>";
+                ?>
             </div>
+        <?php endif; ?>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
-            <button class="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-premium hover:text-white transition-colors">
-                + Add New Entry
-            </button>
-        </header>
+            <div class="lg:col-span-1 anim-load" style="animation-delay: 0.1s;">
+                <div class="bg-obsidian-surface border border-obsidian-edge p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">Client_Access: Granted</div>
+                    
+                    <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 border-l-4 border-premium pl-4">Register_Client</h2>
+                    
+                    <form action="actions/add_customer.php" method="POST" class="space-y-4">
+                        
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Client Identity</label>
+                            <input type="text" name="contact_name" required placeholder="e.g. RYU MOTORS" 
+                                class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-bold focus:outline-none focus:border-premium transition-colors text-white uppercase">
+                        </div>
 
-        <div class="mb-6 flex gap-4 anim-load" style="animation-delay: 0.2s;">
-            <div class="relative flex-1">
-                <input type="text" placeholder="SEARCH_BY_IDENTITY..." class="w-full bg-obsidian-surface border border-obsidian-edge px-4 py-3 text-xs font-mono focus:outline-none focus:border-premium transition-colors">
-            </div>
-            <select class="bg-obsidian-surface border border-obsidian-edge px-4 py-3 text-[10px] uppercase font-bold text-obsidian-muted focus:outline-none focus:border-premium">
-                <option>All Clearance Levels</option>
-                <option>Premium</option>
-                <option>Standard</option>
-            </select>
-        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Membership Tier</label>
+                            <select name="membership_level" class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-white appearance-none">
+                                <option value="STANDARD">Standard</option>
+                                <option value="PREMIUM">Premium</option>
+                                <option value="ELITE">Elite</option>
+                            </select>
+                        </div>
 
-        <div class="bg-obsidian-surface border border-obsidian-edge shadow-2xl anim-load" style="animation-delay: 0.3s;">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-white/[0.03] border-b border-obsidian-edge">
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted">Registry_ID</th>
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted">Entity_Name</th>
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted">Network_Email</th>
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted">Membership_Tier</th>
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted">Created_At</th>
-                            <th class="px-6 py-4 text-[10px] uppercase tracking-widest text-obsidian-muted text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-obsidian-edge">
-                        <?php if ($result && $result->num_rows > 0): ?>
-                            <?php while($row = $result->fetch_assoc()): 
-                                $date = date("Y-m-d", strtotime($row['created_at']));
-                                $i = 0; // Row index for staggering
-                                $i++;
-                                // This adds a tiny delay to every row so they "pop" in one by one
-                                $delay = 0.3 + ($i * 0.05);
-                            ?>
-                            <tr class="hover:bg-white/[0.02] transition-colors group stagger-row" style="animation-delay: <?= $delay ?>s;">
-                                <td class="px-6 py-5 font-mono text-xs text-premium tracking-tighter">
-                                    [#<?= htmlspecialchars($row['customer_code']) ?>]
-                                </td>
-                                <td class="px-6 py-5 text-sm font-bold uppercase tracking-tight text-white">
-                                    <?= htmlspecialchars($row['contact_name']) ?>
-                                </td>
-                                <td class="px-6 py-5 text-xs text-obsidian-muted font-mono">
-                                    <?= htmlspecialchars($row['email']) ?>
-                                </td>
-                                <td class="px-6 py-5">
-                                    <?php if($row['membership_level'] === 'PREMIUM'): ?>
-                                        <div class="inline-block px-2 py-1 bg-premium/10 border border-premium/30 text-premium text-[9px] font-black uppercase tracking-widest">
-                                            Premium
-                                        </div>
-                                    <?php else: ?>
-                                        <div class="inline-block px-2 py-1 bg-white/5 border border-white/10 text-obsidian-muted text-[9px] font-black uppercase tracking-widest">
-                                            Standard
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="px-6 py-5 font-mono text-[11px] text-obsidian-muted italic">
-                                    <?= $date ?>
-                                </td>
-                                <td class="px-6 py-5 text-right">
-                                    <div class="flex justify-end gap-2 opacity-30 group-hover:opacity-100 transition-opacity">
-                                        <button class="px-3 py-1 border border-obsidian-edge hover:border-white text-[9px] uppercase font-bold transition-colors">Edit</button>
-                                        <button class="px-3 py-1 border border-obsidian-edge hover:border-red-500 hover:text-red-500 text-[9px] uppercase font-bold transition-colors">Drop</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endwhile; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Base Location / Address</label>
+                            <textarea name="address" rows="3" required placeholder="Enter primary location..."
+                                class="w-full bg-obsidian-bg border border-obsidian-edge px-4 py-3 text-xs font-mono focus:outline-none focus:border-premium transition-colors text-white resize-none"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-4 bg-premium text-white text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(225,29,72,0.2)]">
+                            Initialize Client
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
-        
-        <div class="mt-4 flex justify-between items-center text-[10px] font-mono text-obsidian-muted uppercase tracking-[0.2em] anim-load" style="animation-delay: 0.4s;">
-            <span>Total Entities: <?= $result->num_rows ?></span>
-            <span>Last Sync: <?= date('H:i:s') ?></span>
+
+            <div class="lg:col-span-2 anim-load" style="animation-delay: 0.2s;">
+                <div class="bg-obsidian-surface border border-obsidian-edge overflow-hidden h-full flex flex-col">
+                    <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
+                        <h2 class="text-xl font-black uppercase tracking-tighter">Client_Ledger</h2>
+                        <span class="text-premium font-mono text-[10px] animate-pulse">[ NETWORK_SYNC_ACTIVE ]</span>
+                    </div>
+
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[10px] uppercase tracking-widest text-obsidian-muted border-b border-obsidian-edge">
+                                    <th class="px-6 py-4">Client Data</th>
+                                    <th class="px-6 py-4">Location</th>
+                                    <th class="px-6 py-4">Tier</th>
+                                    <th class="px-6 py-4 text-right">Operations</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-obsidian-edge">
+                                <?php
+                                $customerQuery = "SELECT * FROM customers ORDER BY created_at DESC";
+                                $customerResult = $mysqli->query($customerQuery);
+
+                                if ($customerResult->num_rows > 0):
+                                    while($customer = $customerResult->fetch_assoc()):
+                                ?>
+                                <tr class="group hover:bg-white/[0.01] transition-colors">
+                                    
+                                    <td class="px-6 py-5">
+                                        <div class="text-[9px] font-mono text-premium uppercase tracking-widest">
+                                            <?= htmlspecialchars($customer['customer_code']) ?>
+                                        </div>
+                                        <div class="text-sm font-bold uppercase text-white group-hover:text-premium transition-colors">
+                                            <?= htmlspecialchars($customer['contact_name']) ?>
+                                        </div>
+                                        <div class="text-[9px] font-mono text-obsidian-muted mt-1">
+                                            UID: #<?= str_pad($customer['customer_id'], 4, '0', STR_PAD_LEFT) ?>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="px-6 py-5">
+                                        <div class="text-[10px] font-mono text-obsidian-muted line-clamp-2 max-w-[200px]">
+                                            <?= htmlspecialchars($customer['address']) ?>
+                                        </div>
+                                    </td>
+
+                                    <td class="px-6 py-5">
+                                        <?php if($customer['membership_level'] === 'PREMIUM' || $customer['membership_level'] === 'ELITE'): ?>
+                                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/10 border border-premium/30 text-premium text-[9px] font-black uppercase tracking-widest shadow-[0_0_10px_rgba(225,29,72,0.1)]">
+                                                <?= htmlspecialchars($customer['membership_level']) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 text-obsidian-muted text-[9px] font-black uppercase tracking-widest">
+                                                STANDARD
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td class="px-6 py-5 text-right">
+                                        <div class="flex justify-end gap-3 opacity-30 group-hover:opacity-100 transition-opacity">
+                                            <a href="edit_customer.php?id=<?= $customer['customer_id'] ?>" class="text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white transition-colors">Edit</a>
+                                            <a href="actions/delete_customer.php?id=<?= $customer['customer_id'] ?>" 
+                                            onclick="return confirm('Purge this client from the database?')"
+                                            class="text-[10px] font-black uppercase tracking-widest text-premium/50 hover:text-premium transition-colors">Purge</a>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <?php endwhile; else: ?>
+                                <tr>
+                                    <td colspan="4" class="px-6 py-10 text-center text-obsidian-muted font-mono text-xs">No clients found in ledger.</td>
+                                </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 

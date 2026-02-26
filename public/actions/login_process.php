@@ -5,7 +5,7 @@
 session_start();
 
 // 2. Include database connection
-require_once "../config/database.php";
+require_once "../../config/database.php";
 
 // 3. Check if the form was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -31,15 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Route them based on their role
                 if ($row['role'] === 'employee') {
-                    header("Location: customers.php");
+                    header("Location: ../customers.php");
                 } else {
-                    header("Location: index.php"); // Customer dashboard
+                    header("Location: ../index.php"); // Customer dashboard
                 }
                 exit; 
                 
             } else {
                 // Incorrect password
-                header("Location: login.php?error=invalid_credentials");
+                header("Location: ../login.php?error=invalid_credentials");
                 exit;
             }
         } else {

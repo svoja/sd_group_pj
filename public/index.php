@@ -12,15 +12,34 @@ require_once "../config/database.php";
 $user_id = $_SESSION['user_id'];
 $email = $_SESSION['email'];
 
-$stmt = $mysqli->prepare("SELECT customer_code, contact_name, address, membership_level FROM customers WHERE user_id = ?");
+// Fetch Customer Profile (Added customer_id to the SELECT query)
+$stmt = $mysqli->prepare("SELECT customer_id, customer_code, contact_name, address, membership_level FROM customers WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $customerProfile = $result->fetch_assoc();
 
+$customer_id = $customerProfile['customer_id'] ?? 0;
 $name = $customerProfile['contact_name'] ?? 'Valued Customer';
 $level = $customerProfile['membership_level'] ?? 'STANDARD';
 $code = $customerProfile['customer_code'] ?? 'N/A';
+
+// --- NEW: FETCH DASHBOARD METRICS ---
+$statsQuery = "
+    SELECT 
+        (SELECT COUNT(*) FROM sale_orders WHERE customer_id = ?) AS total_orders,
+        (SELECT SUM(total_amount) FROM sale_orders WHERE customer_id = ?) AS total_spent,
+        (SELECT COUNT(*) FROM invoices WHERE customer_id = ? AND payment_status = 'PENDING') AS pending_invoices
+";
+$stmtStats = $mysqli->prepare($statsQuery);
+$stmtStats->bind_param("iii", $customer_id, $customer_id, $customer_id);
+$stmtStats->execute();
+$stats = $stmtStats->get_result()->fetch_assoc();
+
+$total_orders = $stats['total_orders'] ?? 0;
+$total_spent = $stats['total_spent'] ?? 0.00;
+$pending_invoices = $stats['pending_invoices'] ?? 0;
+// ------------------------------------
 ?>
 
 <!DOCTYPE html>
@@ -60,9 +79,13 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
 
     <style>
         body {
+            background-color: #020202;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
+                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 24px 24px;
+            background-attachment: fixed;
         }
 
         /* Sharp geometric corner accent */
@@ -74,11 +97,6 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
             background: linear-gradient(225deg, rgba(255,255,255,0.05) 50%, transparent 50%);
         }
 
-        /* Custom Badge Shape */
-        .clip-badge {
-            clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 10% 100%, 0 70%);
-        }
-
         /* Tectonic Rise Animations */
         @keyframes tectonicRise {
             from { opacity: 0; transform: translateY(40px) scale(0.98); }
@@ -87,6 +105,7 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
         .anim-hero { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
         .stagger-1 { animation: tectonicRise 0.8s 0.1s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
         .stagger-2 { animation: tectonicRise 0.8s 0.2s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
+        .anim-load { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
     </style>
 </head>
 
@@ -116,14 +135,14 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
 
             <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mt-12">
                 <div class="text-right">
-                    <p class="text-white text-sm uppercase tracking-[0.3em] font-bold">Official Supplier</p>
-                    <p class="text-obsidian-muted text-[10px] uppercase tracking-widest mt-1">Obsidian Performance Division</p>
+                    <p class="text-white text-sm uppercase tracking-[0.3em] font-bold">Client Terminal</p>
+                    <p class="text-obsidian-muted text-[10px] uppercase tracking-widest mt-1">Authorized Access Granted</p>
                 </div>
                 
                 <div class="h-12 w-px bg-premium hidden md:block"></div>
                 
                 <div class="text-left font-mono text-xs">
-                    <p class="text-premium animate-pulse">[ AUTH_SESSION: ACTIVE ]</p>
+                    <p class="text-premium animate-pulse">[ IDENTITY: <?= htmlspecialchars($name) ?> ]</p>
                     <p class="text-obsidian-muted uppercase mt-1">Clearance: <?= htmlspecialchars($level) ?></p>
                 </div>
             </div>
@@ -133,9 +152,42 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
         <div class="absolute bottom-10 right-10 w-20 h-20 border-b border-r border-white/10"></div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto py-20 px-8">
+    <section class="max-w-[1400px] mx-auto px-8 relative z-20 -mt-16 mb-16 stagger-1">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-obsidian-surface border border-obsidian-edge p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-white/5 to-transparent"></div>
+                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Total Operations</p>
+                <div class="flex items-end gap-3">
+                    <span class="text-4xl font-black tracking-tighter group-hover:text-premium transition-colors"><?= $total_orders ?></span>
+                    <span class="text-[10px] font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Orders</span>
+                </div>
+            </div>
+
+            <div class="bg-obsidian-surface border border-obsidian-edge p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-premium/10 to-transparent"></div>
+                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Fleet Investment</p>
+                <div class="flex items-end gap-1">
+                    <span class="text-xl font-mono text-premium font-bold mb-1">$</span>
+                    <span class="text-4xl font-black tracking-tighter group-hover:text-white transition-colors"><?= number_format($total_spent, 2) ?></span>
+                </div>
+            </div>
+
+            <div class="bg-obsidian-surface border <?= $pending_invoices > 0 ? 'border-yellow-500/50' : 'border-obsidian-edge' ?> p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group transition-colors">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-<?= $pending_invoices > 0 ? 'yellow-500/10' : 'white/5' ?> to-transparent"></div>
+                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Awaiting Clearing</p>
+                <div class="flex items-end gap-3">
+                    <span class="text-4xl font-black tracking-tighter <?= $pending_invoices > 0 ? 'text-yellow-500 animate-pulse' : 'text-white' ?>"><?= $pending_invoices ?></span>
+                    <span class="text-[10px] font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Pending Invoices</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <main class="max-w-[1400px] mx-auto pb-20 px-8">
         
-        <div class="flex items-end justify-between mb-12 stagger-1 border-l-4 border-premium pl-6">
+        <div class="flex items-end justify-between mb-12 stagger-2 border-l-4 border-premium pl-6">
             <div>
                 <h2 class="text-4xl font-black tracking-tighter uppercase">Available Components</h2>
                 <p class="text-obsidian-muted font-mono text-xs mt-2 uppercase tracking-widest">
@@ -163,12 +215,12 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
                     $pId = $product['product_id'];
                     
                     // 3. Image Logic
-                    $img_filename = $product['image_path']; 
+                    $img_filename = $product['image_path'] ?? ''; 
                     $img_path = "assets/products/" . $img_filename;
                     $hasImage = (!empty($img_filename) && file_exists($img_path));
             ?>
             
-            <div class="slab stagger-2 group relative bg-obsidian-surface border border-obsidian-edge p-3 overflow-hidden transition-all duration-500 hover:border-premium/40">
+            <div class="slab stagger-2 group relative bg-obsidian-surface border border-obsidian-edge p-3 overflow-hidden transition-all duration-500 hover:border-premium/40 shadow-xl shadow-black">
                 
                 <div class="aspect-square bg-obsidian-bg border border-obsidian-edge overflow-hidden relative">
                     <?php if ($hasImage): ?>
@@ -223,16 +275,6 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
         </div>
     </main>
 
-    <style>
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-            animation: spin-slow 20s linear infinite;
-        }
-    </style>
-
     <script>
         // Performance-focused Tilt Effect
         document.querySelectorAll('.slab').forEach(slab => {
@@ -251,3 +293,4 @@ $code = $customerProfile['customer_code'] ?? 'N/A';
         });
     </script>
 </body>
+</html>

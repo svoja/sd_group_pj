@@ -7,14 +7,21 @@
         <a href="index.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'index.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
             [01] Dashboard
         </a>
-        <a href="products.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'products.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
-            [02] Products
+        <a href="employees.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'employees.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
+            [02] Employees
         </a>
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'employee'): ?>
-            <a href="customers.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'customers.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
-                [03] Management
-            </a>
-        <?php endif; ?>
+        <a href="products.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'products.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
+            [03] Products
+        </a>
+        <a href="customers.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'customers.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
+            [04] Customers
+        </a>
+        <a href="sales.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'sales.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
+            [05] Sales
+        </a>
+        <a href="invoices.php" class="text-[10px] uppercase tracking-[0.2em] transition-colors <?= basename($_SERVER['PHP_SELF']) == 'invoices.php' ? 'text-white' : 'text-obsidian-muted hover:text-white' ?>">
+            [06] Invoices
+        </a>
     </div>
 
     <div class="hidden md:flex items-center gap-8 text-xs uppercase tracking-widest">
@@ -24,7 +31,7 @@
         </div>
         
         <a href="logout.php" class="text-red-500 border border-red-500/20 px-4 py-2 text-[10px] font-bold tracking-tighter transition-all duration-300 hover:bg-red-500 hover:text-white hover:shadow-[0_0_15px_rgba(255,77,77,0.3)]">
-            Profile
+            Logout
         </a>
     </div>
 </nav>
