@@ -29,7 +29,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard | ARAI MOTO</title>
+    <title>Personnel Management | ARAI MOTO</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,7 +70,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                 radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
                 radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 24px 24px;
-            background-attachment: fixed; /* Keeps the grid still when scrolling */
+            background-attachment: fixed;
         }
 
         /* Sharp geometric corner accent */
@@ -95,11 +95,6 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
         .anim-hero { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
         .stagger-1 { animation: tectonicRise 0.8s 0.1s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
         .stagger-2 { animation: tectonicRise 0.8s 0.2s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
-        @keyframes tectonicRise {
-            from { opacity: 0; transform: translateY(40px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
         .anim-load {
             animation: tectonicRise 0.8s forwards ease-out;
             opacity: 0;
@@ -114,7 +109,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
     <main class="max-w-[1400px] mx-auto py-20 px-8">
 
         <?php if (isset($_GET['status'])): ?>
-            <div class="mb-6 p-4 bg-obsidian-surface border-l-4 border-premium font-mono text-[10px] uppercase tracking-widest anim-load">
+            <div class="mb-6 p-4 bg-obsidian-surface border-l-4 border-premium font-mono text-[10px] uppercase tracking-widest anim-load shadow-lg shadow-black">
                 <?php 
                     if ($_GET['status'] == 'onboarded') echo "[ STATUS: NEW_ENTITY_AUTHORIZED ]";
                     if ($_GET['status'] == 'updated') echo "[ STATUS: ENTITY_RECALIBRATED_SUCCESSFULLY ]";
@@ -127,7 +122,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
             <div class="lg:col-span-1 anim-load" style="animation-delay: 0.1s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge p-8 relative overflow-hidden">
+                <div class="bg-obsidian-surface border border-obsidian-edge p-8 relative overflow-hidden shadow-2xl shadow-black">
                     <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">System_Access: Alpha</div>
                     
                     <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 border-l-4 border-premium pl-4">Onboard_Staff</h2>
@@ -157,7 +152,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
             </div>
 
             <div class="lg:col-span-2 anim-load" style="animation-delay: 0.2s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge overflow-hidden">
+                <div class="bg-obsidian-surface border border-obsidian-edge overflow-hidden shadow-2xl shadow-black">
                     <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                         <h2 class="text-xl font-black uppercase tracking-tighter">Personnel_Registry</h2>
                         <span class="text-premium font-mono text-[10px] animate-pulse">[ DATA_SECURE ]</span>
@@ -269,3 +264,4 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
         });
     </script>
 </body>
+</html>

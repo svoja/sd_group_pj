@@ -46,33 +46,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
 
     // 4. Recalculate Master Order Totals
-    // Sum all total_prices from sale_order_details for this order
     $stmt = $mysqli->prepare("SELECT SUM(total_price) as new_subtotal FROM sale_order_details WHERE order_id = ?");
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
     $calcResult = $stmt->get_result()->fetch_assoc();
-    $new_subtotal = (float)$calcResult['new_subtotal'];
+    $new_subtotal = $calcResult['new_subtotal'] ? (float)$calcResult['new_subtotal'] : 0.00;
     $stmt->close();
 
-    // Fetch the discounts from the order to calculate final total
-    $stmt = $mysqli->prepare("SELECT membership_discount, special_discount FROM sale_orders WHERE order_id = ?");
+    // 5. FETCH CUSTOMER TIER TO CALCULATE 5% DISCOUNT
+    $stmt = $mysqli->prepare("
+        SELECT o.special_discount, c.membership_level 
+        FROM sale_orders o 
+        JOIN customers c ON o.customer_id = c.customer_id 
+        WHERE o.order_id = ?
+    ");
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
-    $order = $stmt->get_result()->fetch_assoc();
+    $orderData = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    $discounts = (float)$order['membership_discount'] + (float)$order['special_discount'];
-    $final_total = $new_subtotal - $discounts;
-    // Prevent negative total
-    if ($final_total < 0) $final_total = 0; 
+    // Calculate the 5% Membership Discount
+    $membership_discount = 0.00;
+    if ($orderData['membership_level'] === 'PREMIUM') {
+        $membership_discount = $new_subtotal * 0.05; // 5% off for Premium
+    } elseif ($orderData['membership_level'] === 'ELITE') {
+        $membership_discount = $new_subtotal * 0.10; // Optional: 10% off for Elite
+    }
 
-    // Update the Orders table
-    $stmt = $mysqli->prepare("UPDATE sale_orders SET subtotal = ?, total_amount = ? WHERE order_id = ?");
-    $stmt->bind_param("ddi", $new_subtotal, $final_total, $order_id);
+    $special_discount = (float)$orderData['special_discount'];
+    
+    // Calculate Final Total
+    $final_total = $new_subtotal - ($membership_discount + $special_discount);
+    if ($final_total < 0) $final_total = 0; // Prevent negative totals
+
+    // 6. Update the Orders table with the calculated discount amount
+    $stmt = $mysqli->prepare("UPDATE sale_orders SET subtotal = ?, membership_discount = ?, total_amount = ? WHERE order_id = ?");
+    $stmt->bind_param("dddi", $new_subtotal, $membership_discount, $final_total, $order_id);
     $stmt->execute();
     $stmt->close();
 
-    // 5. Success - Redirect back to terminal
+    // 7. Success - Redirect back to terminal
     header("Location: ../order_terminal.php?id=$order_id&status=item_added");
     exit;
 } else {

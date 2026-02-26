@@ -1,10 +1,10 @@
 <?php
 session_start();
-require_once "../config/database.php";
+require_once "../config/database.php"; 
 
 // 1. STRICT SECURITY GUARD
 if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'employee') {
-    header("Location: ../index.php"); 
+    header("Location: ../login.php");
     exit;
 }
 
@@ -50,9 +50,13 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 
     <style>
         body {
+            background-color: #020202;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(225, 29, 72, 0.03) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 40%);
+                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
+                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 24px 24px;
+            background-attachment: fixed;
         }
         @keyframes tectonicRise {
             from { opacity: 0; transform: translateY(40px) scale(0.98); }
@@ -84,7 +88,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
             <div class="lg:col-span-1 anim-load" style="animation-delay: 0.1s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge p-8 relative overflow-hidden">
+                <div class="bg-obsidian-surface border border-obsidian-edge p-8 relative overflow-hidden shadow-2xl shadow-black">
                     <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">Sys_Op: <?= htmlspecialchars($code) ?></div>
                     
                     <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 border-l-4 border-premium pl-4">Initialize_P.O.</h2>
@@ -159,7 +163,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
             </div>
 
             <div class="lg:col-span-2 anim-load" style="animation-delay: 0.2s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge overflow-hidden h-full flex flex-col">
+                <div class="bg-obsidian-surface border border-obsidian-edge overflow-hidden h-full flex flex-col shadow-2xl shadow-black">
                     <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                         <h2 class="text-xl font-black uppercase tracking-tighter">Sales_Ledger</h2>
                         <span class="text-premium font-mono text-[10px] animate-pulse">[ AWAITING_TRANSACTIONS ]</span>
@@ -178,9 +182,9 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                             </thead>
                             <tbody class="divide-y divide-obsidian-edge">
                                 <?php
-                                // NOW WE COUNT THE ITEMS FROM sale_order_details USING A SUBQUERY
+                                // We added c.membership_level so we know WHY they got a discount
                                 $orderQuery = "
-                                    SELECT o.*, c.contact_name, c.customer_code, e.name as employee_name,
+                                    SELECT o.*, c.contact_name, c.customer_code, c.membership_level, e.name as employee_name,
                                     (SELECT SUM(quantity) FROM sale_order_details WHERE order_id = o.order_id) as total_items
                                     FROM sale_orders o 
                                     LEFT JOIN customers c ON o.customer_id = c.customer_id 
@@ -223,10 +227,19 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                                     </td>
 
                                     <td class="px-6 py-5 font-mono text-xs">
-                                        <div class="text-white">TOTAL: <span class="text-premium font-bold">$<?= number_format($order['total_amount'], 2) ?></span></div>
-                                        <div class="text-[9px] text-obsidian-muted mt-1">
-                                            ITEMS: <span class="<?= $itemCount > 0 ? 'text-green-500' : 'text-red-500' ?>"><?= $itemCount ?></span> | 
-                                            DISC: -$<?= number_format($order['special_discount'] + $order['membership_discount'], 2) ?>
+                                        <div class="text-white mb-2 border-b border-obsidian-edge pb-1">
+                                            TOTAL: <span class="text-premium font-bold">$<?= number_format($order['total_amount'], 2) ?></span>
+                                        </div>
+                                        <div class="text-[9px] text-obsidian-muted flex flex-col gap-1">
+                                            <div>ITEMS: <span class="<?= $itemCount > 0 ? 'text-green-500' : 'text-red-500' ?>"><?= $itemCount ?></span></div>
+                                            
+                                            <?php if ($order['membership_discount'] > 0): ?>
+                                                <div class="text-blue-400">MEM (<?= htmlspecialchars($order['membership_level']) ?>): -$<?= number_format($order['membership_discount'], 2) ?></div>
+                                            <?php else: ?>
+                                                <div>MEM DISC: -$0.00</div>
+                                            <?php endif; ?>
+
+                                            <div>SPL DISC: -$<?= number_format($order['special_discount'], 2) ?></div>
                                         </div>
                                     </td>
 
@@ -250,7 +263,7 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
                                 </tr>
                                 <?php endwhile; else: ?>
                                 <tr>
-                                    <td colspan="4" class="px-6 py-10 text-center text-obsidian-muted font-mono text-xs">No active purchase orders found.</td>
+                                    <td colspan="5" class="px-6 py-10 text-center text-obsidian-muted font-mono text-xs">No active purchase orders found.</td>
                                 </tr>
                                 <?php endif; ?>
                             </tbody>
