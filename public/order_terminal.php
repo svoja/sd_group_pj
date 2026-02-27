@@ -52,12 +52,73 @@ if (!$order) {
         }
     </script>
     <style>
-        body { background-image: radial-gradient(circle at 20% 30%, rgba(225, 29, 72, 0.03) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 40%); }
+                body {
+
+            background-color: #020202;
+
+
+
+            /* Multi-layered cinematic background */
+
+            background-image:
+
+
+
+                /* Top-left red plasma glow */
+
+                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.18) 0%, transparent 55%),
+
+
+
+                /* Bottom-right blue tech glow */
+
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.12) 0%, transparent 60%),
+
+
+
+                /* Center ambient energy */
+
+                radial-gradient(circle at 50% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 65%),
+
+
+
+                /* Dot grid matrix */
+
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+
+
+
+            background-size:
+
+                100% 100%,
+
+                100% 100%,
+
+                100% 100%,
+
+                26px 26px;
+
+
+
+            background-attachment: fixed;
+
+        }
+        
         @keyframes tectonicRise { from { opacity: 0; transform: translateY(40px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .anim-load { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #020202; }
         ::-webkit-scrollbar-thumb { background: #e11d48; border-radius: 10px; }
+        /* NEW: Scrolling Marquee Animation */
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll-left 28s linear infinite;
+        }
     </style>
 </head>
 
@@ -125,6 +186,16 @@ if (!$order) {
                         Append to Manifest
                     </button>
                 </form>
+            </div>
+
+            <div class="bg-premium/10 border border-premium overflow-hidden p-3 shadow-[0_0_15px_rgba(225,29,72,0.2)]">
+                <div class="w-full overflow-hidden">
+                    <div class="animate-marquee font-mono text-xs font-black text-premium uppercase tracking-[0.2em]">
+                        >>> ACTIVE PROMOTION: BUY 19,000 BAHT GET 10% DISCOUNT ON FINAL SALE!! <<<
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        >>> ACTIVE PROMOTION: BUY 19,000 BAHT GET 10% DISCOUNT ON FINAL SALE!! <<<
+                    </div>
+                </div>
             </div>
         </div>
 

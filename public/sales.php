@@ -51,14 +51,57 @@ $code = $employeeProfile['employee_code'] ?? 'SYS-0000';
 
     <style>
         body {
+
             background-color: #020202;
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
-                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px;
+
+
+
+            /* Multi-layered cinematic background */
+
+            background-image:
+
+
+
+                /* Top-left red plasma glow */
+
+                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.18) 0%, transparent 55%),
+
+
+
+                /* Bottom-right blue tech glow */
+
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.12) 0%, transparent 60%),
+
+
+
+                /* Center ambient energy */
+
+                radial-gradient(circle at 50% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 65%),
+
+
+
+                /* Dot grid matrix */
+
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+
+
+
+            background-size:
+
+                100% 100%,
+
+                100% 100%,
+
+                100% 100%,
+
+                26px 26px;
+
+
+
             background-attachment: fixed;
+
         }
+        
         @keyframes tectonicRise {
             from { opacity: 0; transform: translateY(40px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }

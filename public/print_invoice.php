@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../config/database.php";
+require_once "../config/currency.php";
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'employee') {
     header("Location: ../index.php"); 
@@ -148,8 +149,8 @@ $items = $stmt->get_result();
                         <div class="text-[10px] text-gray-500 tracking-widest mt-1"><?= htmlspecialchars($item['product_code']) ?></div>
                     </td>
                     <td class="py-4 px-2 text-center"><?= $item['quantity'] ?></td>
-                    <td class="py-4 px-2 text-right text-gray-600">$<?= number_format($item['unit_price'], 2) ?></td>
-                    <td class="py-4 px-2 text-right font-bold">$<?= number_format($item['total_price'], 2) ?></td>
+                    <td class="py-4 px-2 text-right text-gray-600"><?= formatCurrency($item['unit_price'], 2) ?></td>
+                    <td class="py-4 px-2 text-right font-bold"><?= formatCurrency($item['total_price'], 2) ?></td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
@@ -159,7 +160,7 @@ $items = $stmt->get_result();
             <div class="w-64 space-y-2">
                 <div class="flex justify-between text-sm text-gray-600">
                     <span>SUBTOTAL:</span>
-                    <span>$<?= number_format($invoice['subtotal'], 2) ?></span>
+                    <span><?= formatCurrency($invoice['subtotal'], 2) ?></span>
                 </div>
                 
                 <?php 
@@ -168,13 +169,13 @@ $items = $stmt->get_result();
                 ?>
                 <div class="flex justify-between text-sm text-premium">
                     <span>DISCOUNT:</span>
-                    <span>-$<?= number_format($total_discount, 2) ?></span>
+                    <span>-<?= formatCurrency($total_discount, 2) ?></span>
                 </div>
                 <?php endif; ?>
                 
                 <div class="flex justify-between text-xl font-black tracking-tighter pt-2 border-t border-gray-200">
                     <span>TOTAL:</span>
-                    <span>$<?= number_format($invoice['total_amount'], 2) ?></span>
+                    <span><?= formatCurrency($invoice['total_amount'], 2) ?></span>
                 </div>
             </div>
         </div>

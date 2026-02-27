@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "../config/database.php";
+require_once "../config/currency.php"; // Currency engine loaded
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'employee') {
     header("Location: ../index.php"); 
@@ -60,7 +61,58 @@ if ($selected_order_id > 0) {
         }
     </script>
     <style>
-        body { background-image: radial-gradient(circle at 20% 30%, rgba(225, 29, 72, 0.03) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.03) 0%, transparent 40%); }
+        body {
+
+            background-color: #020202;
+
+
+
+            /* Multi-layered cinematic background */
+
+            background-image:
+
+
+
+                /* Top-left red plasma glow */
+
+                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.18) 0%, transparent 55%),
+
+
+
+                /* Bottom-right blue tech glow */
+
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.12) 0%, transparent 60%),
+
+
+
+                /* Center ambient energy */
+
+                radial-gradient(circle at 50% 40%, rgba(168, 85, 247, 0.05) 0%, transparent 65%),
+
+
+
+                /* Dot grid matrix */
+
+                radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+
+
+
+            background-size:
+
+                100% 100%,
+
+                100% 100%,
+
+                100% 100%,
+
+                26px 26px;
+
+
+
+            background-attachment: fixed;
+
+        }
+        
         @keyframes tectonicRise { from { opacity: 0; transform: translateY(40px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .anim-load { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
         ::-webkit-scrollbar { width: 6px; }
@@ -76,9 +128,10 @@ if ($selected_order_id > 0) {
     <main class="flex-grow max-w-[1400px] mx-auto w-full py-10 px-8 flex flex-col gap-10">
 
         <?php if (isset($_GET['status'])): ?>
-            <div class="p-4 bg-obsidian-surface border-l-4 border-premium font-mono text-[10px] uppercase tracking-widest anim-load">
+            <div class="p-4 bg-obsidian-surface border-l-4 border-premium font-mono text-[10px] uppercase tracking-widest anim-load shadow-2xl shadow-black">
                 <?php 
                     if ($_GET['status'] == 'generated') echo "[ SYS: INVOICE_SUCCESSFULLY_GENERATED ]";
+                    if ($_GET['status'] == 'updated') echo "[ SYS: INVOICE_DATA_RECALIBRATED ]";
                     if ($_GET['status'] == 'deleted') echo "[ SYS: INVOICE_PURGED_FROM_LEDGER ]";
                     if ($_GET['status'] == 'db_error') echo "<span class='text-red-500'>[ ERROR: DATABASE_SYNC_FAILURE ]</span>";
                 ?>
@@ -87,7 +140,7 @@ if ($selected_order_id > 0) {
 
         <div class="flex flex-col lg:flex-row gap-10">
             <div class="lg:w-1/3 flex flex-col gap-6 anim-load" style="animation-delay: 0.1s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge p-6 relative flex-grow">
+                <div class="bg-obsidian-surface border border-obsidian-edge p-6 relative flex-grow shadow-2xl shadow-black">
                     <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">Sys_Op: <?= htmlspecialchars($code) ?></div>
                     <h2 class="text-2xl font-black uppercase tracking-tighter mb-8 border-l-4 border-premium pl-4">Generate_Invoice</h2>
 
@@ -152,7 +205,7 @@ if ($selected_order_id > 0) {
             </div>
 
             <div class="lg:w-2/3 flex flex-col anim-load" style="animation-delay: 0.2s;">
-                <div class="bg-obsidian-surface border border-obsidian-edge flex-grow flex flex-col">
+                <div class="bg-obsidian-surface border border-obsidian-edge flex-grow flex flex-col shadow-2xl shadow-black">
                     <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                         <h2 class="text-xl font-black uppercase tracking-tighter">Order_Preview</h2>
                         <span class="text-premium font-mono text-[10px] animate-pulse">[ <?= $previewOrder ? 'DATA_LOCKED' : 'AWAITING_SELECTION' ?> ]</span>
@@ -172,7 +225,7 @@ if ($selected_order_id > 0) {
                             </div>
                             <div class="text-right">
                                 <p class="text-[10px] uppercase tracking-widest text-obsidian-muted mb-1">Final Authorization Math</p>
-                                <p class="text-2xl font-black text-white">$<?= number_format($previewOrder['total_amount'], 2) ?></p>
+                                <p class="text-2xl font-black text-white"><?= formatCurrency($previewOrder['total_amount']) ?></p>
                             </div>
                         </div>
 
@@ -194,8 +247,8 @@ if ($selected_order_id > 0) {
                                             <div class="text-xs font-bold uppercase text-white"><?= htmlspecialchars($item['product_name']) ?></div>
                                         </td>
                                         <td class="px-4 py-4 text-center font-mono text-xs"><?= $item['quantity'] ?></td>
-                                        <td class="px-4 py-4 text-right font-mono text-xs text-obsidian-muted">$<?= number_format($item['unit_price'], 2) ?></td>
-                                        <td class="px-4 py-4 text-right font-mono text-sm font-bold text-white">$<?= number_format($item['total_price'], 2) ?></td>
+                                        <td class="px-4 py-4 text-right font-mono text-xs text-obsidian-muted"><?= formatCurrency($item['unit_price']) ?></td>
+                                        <td class="px-4 py-4 text-right font-mono text-sm font-bold text-white"><?= formatCurrency($item['total_price']) ?></td>
                                     </tr>
                                     <?php endwhile; ?>
                                 </tbody>
@@ -211,7 +264,7 @@ if ($selected_order_id > 0) {
         </div>
 
         <div class="anim-load" style="animation-delay: 0.3s;">
-            <div class="bg-obsidian-surface border border-obsidian-edge flex flex-col">
+            <div class="bg-obsidian-surface border border-obsidian-edge flex flex-col shadow-2xl shadow-black">
                 <div class="px-8 py-6 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                     <h2 class="text-xl font-black uppercase tracking-tighter">Invoice_Ledger</h2>
                     <span class="text-obsidian-muted font-mono text-[10px] uppercase tracking-widest">[ HISTORICAL_RECORDS ]</span>
@@ -230,7 +283,6 @@ if ($selected_order_id > 0) {
                         </thead>
                         <tbody class="divide-y divide-obsidian-edge">
                             <?php
-                            // Query to get existing invoices with related data
                             $invQuery = "
                                 SELECT i.*, o.po_reference, c.contact_name 
                                 FROM invoices i 
@@ -254,7 +306,7 @@ if ($selected_order_id > 0) {
                                 </td>
                                 
                                 <td class="px-4 py-4 text-right font-mono">
-                                    <div class="text-sm font-bold text-white">$<?= number_format($inv['total_amount'], 2) ?></div>
+                                    <div class="text-sm font-bold text-white"><?= formatCurrency($inv['total_amount']) ?></div>
                                     <div class="text-[9px] text-obsidian-muted uppercase tracking-widest mt-1">[ <?= htmlspecialchars($inv['payment_method']) ?> ]</div>
                                 </td>
 
