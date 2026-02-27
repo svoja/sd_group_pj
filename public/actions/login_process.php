@@ -44,17 +44,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } else {
             // User not found
-            header("Location: login.php?error=invalid_credentials");
+            header("Location: ../login.php?error=invalid_credentials");
             exit;
         }
     } else {
         // Empty fields
-        header("Location: login.php?error=empty_fields");
+        header("Location: ../login.php?error=empty_fields");
         exit;
     }
 } else {
     // If someone tries to access this file directly without submitting the form
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 ?>
