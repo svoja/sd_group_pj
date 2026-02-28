@@ -1,13 +1,13 @@
 <?php
-$host = "127.0.0.1";
-$username = "root";
-$password = "";
-$database = "group_pj";
-$mysqli = new mysqli("127.0.0.1", "root", "", "group_pj");
+$host = "mysql";
+$port = 3306;
+$user = "root";
+$pass = "root";
+$db   = "sd_group"; // หรือ mydb แล้วแต่ของจริง
 
-// Check connection
-if ($mysqli -> connect_errno) {
-  echo "Failed to connect to MySQL: " . $mysqli -> connect_error;
-  exit();
+$mysqli = new mysqli($host, $user, $pass, $db, $port);
+
+if ($mysqli->connect_error) {
+  die("Connection failed: " . $mysqli->connect_error);
 }
 ?>

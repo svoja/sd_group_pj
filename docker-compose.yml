@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  php:
+    build: .
+    container_name: sd_group_pj-php
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:80"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: sd_group_pj-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: sd_group
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./group_pj.sql:/docker-entrypoint-initdb.d/group_pj.sql
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: sd_group_pj-phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
