@@ -51,37 +51,29 @@ $items = $stmt->get_result();
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Invoice <?= htmlspecialchars($invoice['invoice_reference']) ?> | ARAI MOTO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: { fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }, colors: { premium: '#e11d48' } }
-            }
-        }
-    </script>
-    <style>
-        body { background-color: #f3f4f6; color: #000; }
-        .invoice-box { background-color: #fff; max-w: 800px; margin: 40px auto; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        
-        /* Hides the print button and page background when printing */
-        @media print {
-            body { background-color: #fff; }
-            .invoice-box { box-shadow: none; margin: 0; padding: 0; max-w: 100%; }
-            .no-print { display: none !important; }
-        }
-    </style>
-</head>
+<?php
+$pageTitle = "Invoice " . ($invoice['invoice_reference'] ?? 'N/A') . " | ARAII MOTO";
+$extraHead = <<<'HTML'
+<style>
+    body { background-color: #f3f4f6; color: #000; }
+    .invoice-box { background-color: #fff; max-width: 800px; margin: 40px auto; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+
+    @media print {
+        body { background-color: #fff; }
+        .invoice-box { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+        .no-print { display: none !important; }
+    }
+</style>
+HTML;
+include 'partials/head.php';
+?>
 <body class="font-sans antialiased">
 
-    <div class="no-print text-center py-6 bg-[#0a0a0a] border-b border-[#e11d48]/30">
-        <button onclick="window.print()" class="bg-[#e11d48] text-white px-8 py-3 text-xs font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-colors">
+    <div class="no-print text-center py-6 bg-[#ffffff] border-b border-[#b00020]/30">
+        <button onclick="window.print()" class="bg-[#b00020] text-white px-8 py-3 text-sm font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-colors">
             [ Print Document ]
         </button>
-        <button onclick="window.close()" class="ml-4 border border-white/20 text-white/50 px-8 py-3 text-xs font-black uppercase tracking-[0.3em] hover:text-white transition-colors">
+        <button onclick="window.close()" class="ml-4 border border-black/20 text-black/50 px-8 py-3 text-sm font-black uppercase tracking-[0.3em] hover:text-black transition-colors">
             Close View
         </button>
     </div>
@@ -90,43 +82,43 @@ $items = $stmt->get_result();
         
         <div class="flex justify-between items-start border-b-4 border-black pb-8 mb-8">
             <div>
-                <h1 class="text-4xl font-black uppercase tracking-tighter leading-none mb-1">ARAI <span class="text-premium">MOTO</span></h1>
-                <p class="font-mono text-xs uppercase tracking-widest text-gray-500">Performance Division</p>
-                <div class="mt-4 font-mono text-xs text-gray-600 space-y-1">
+                <h1 class="text-4xl font-black uppercase tracking-tighter leading-none mb-1">ARAII <span class="text-premium">MOTO</span></h1>
+                <p class="font-mono text-sm uppercase tracking-widest text-black/60">Performance Division</p>
+                <div class="mt-4 font-mono text-sm text-black/70 space-y-1">
                     <p>104 Obsidian Way</p>
                     <p>Neo-Tokyo Sector, 88492</p>
-                    <p>SYS: ARAI-MOTO-SECURE</p>
+                    <p>SYS: ARAII-MOTO-SECURE</p>
                 </div>
             </div>
             <div class="text-right">
-                <h2 class="text-3xl font-black uppercase tracking-tighter text-gray-200">INVOICE</h2>
+                <h2 class="text-3xl font-black uppercase tracking-tighter text-black/80">INVOICE</h2>
                 <div class="mt-4 font-mono text-sm space-y-1">
                     <p class="font-bold"><?= htmlspecialchars($invoice['invoice_reference']) ?></p>
-                    <p class="text-gray-500">DATE: <?= date('d M Y', strtotime($invoice['invoice_date'])) ?></p>
-                    <p class="text-gray-500">PO REF: <?= htmlspecialchars($invoice['po_reference']) ?></p>
+                    <p class="text-black/60">DATE: <?= date('d M Y', strtotime($invoice['invoice_date'])) ?></p>
+                    <p class="text-black/60">PO REF: <?= htmlspecialchars($invoice['po_reference']) ?></p>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-2 gap-10 mb-8 font-mono text-sm">
             <div>
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2 border-b border-gray-200 pb-1">Billed Entity</p>
-                <p class="font-bold uppercase text-base"><?= htmlspecialchars($invoice['contact_name']) ?></p>
-                <p class="text-gray-500 mt-1"><?= htmlspecialchars($invoice['customer_code']) ?> [<?= htmlspecialchars($invoice['membership_level']) ?>]</p>
-                <p class="text-gray-600 mt-2 whitespace-pre-line"><?= htmlspecialchars($invoice['address']) ?></p>
+                <p class="text-sm uppercase tracking-widest text-black/50 mb-2 border-b border-black/20 pb-1">Billed Entity</p>
+                <p class="font-bold uppercase text-sm"><?= htmlspecialchars($invoice['contact_name']) ?></p>
+                <p class="text-black/60 mt-1"><?= htmlspecialchars($invoice['customer_code']) ?> [<?= htmlspecialchars($invoice['membership_level']) ?>]</p>
+                <p class="text-black/70 mt-2 whitespace-pre-line"><?= htmlspecialchars($invoice['address']) ?></p>
             </div>
             <div>
-                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2 border-b border-gray-200 pb-1">Transaction Details</p>
+                <p class="text-sm uppercase tracking-widest text-black/50 mb-2 border-b border-black/20 pb-1">Transaction Details</p>
                 <div class="grid grid-cols-2 gap-2 mt-2">
-                    <span class="text-gray-500">Method:</span>
+                    <span class="text-black/60">Method:</span>
                     <span class="font-bold text-right uppercase"><?= htmlspecialchars($invoice['payment_method']) ?></span>
                     
-                    <span class="text-gray-500">Status:</span>
-                    <span class="font-bold text-right uppercase <?= $invoice['payment_status'] === 'PAID' ? 'text-green-600' : 'text-gray-800' ?>">
+                    <span class="text-black/60">Status:</span>
+                    <span class="font-bold text-right uppercase <?= $invoice['payment_status'] === 'PAID' ? 'text-premium' : 'text-black' ?>">
                         <?= htmlspecialchars($invoice['payment_status']) ?>
                     </span>
                     
-                    <span class="text-gray-500">Authorized By:</span>
+                    <span class="text-black/60">Authorized By:</span>
                     <span class="text-right uppercase truncate"><?= htmlspecialchars($invoice['staff_name']) ?></span>
                 </div>
             </div>
@@ -134,22 +126,22 @@ $items = $stmt->get_result();
 
         <table class="w-full text-left border-collapse mb-8 font-mono text-sm">
             <thead>
-                <tr class="text-[10px] uppercase tracking-widest text-gray-400 border-y-2 border-black">
+                <tr class="text-sm uppercase tracking-widest text-black/50 border-y-2 border-black">
                     <th class="py-3 px-2">Component / Serial</th>
                     <th class="py-3 px-2 text-center">Qty</th>
                     <th class="py-3 px-2 text-right">Unit Price</th>
                     <th class="py-3 px-2 text-right">Total</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-black/20">
                 <?php while($item = $items->fetch_assoc()): ?>
                 <tr>
                     <td class="py-4 px-2">
                         <div class="font-bold uppercase text-black"><?= htmlspecialchars($item['product_name']) ?></div>
-                        <div class="text-[10px] text-gray-500 tracking-widest mt-1"><?= htmlspecialchars($item['product_code']) ?></div>
+                        <div class="text-sm text-black/60 tracking-widest mt-1"><?= htmlspecialchars($item['product_code']) ?></div>
                     </td>
                     <td class="py-4 px-2 text-center"><?= $item['quantity'] ?></td>
-                    <td class="py-4 px-2 text-right text-gray-600"><?= formatCurrency($item['unit_price'], 2) ?></td>
+                    <td class="py-4 px-2 text-right text-black/70"><?= formatCurrency($item['unit_price'], 2) ?></td>
                     <td class="py-4 px-2 text-right font-bold"><?= formatCurrency($item['total_price'], 2) ?></td>
                 </tr>
                 <?php endwhile; ?>
@@ -158,7 +150,7 @@ $items = $stmt->get_result();
 
         <div class="flex justify-end border-t-2 border-black pt-4 font-mono">
             <div class="w-64 space-y-2">
-                <div class="flex justify-between text-sm text-gray-600">
+                <div class="flex justify-between text-sm text-black/70">
                     <span>SUBTOTAL:</span>
                     <span><?= formatCurrency($invoice['subtotal'], 2) ?></span>
                 </div>
@@ -173,15 +165,15 @@ $items = $stmt->get_result();
                 </div>
                 <?php endif; ?>
                 
-                <div class="flex justify-between text-xl font-black tracking-tighter pt-2 border-t border-gray-200">
+                <div class="flex justify-between text-xl font-black tracking-tighter pt-2 border-t border-black/20">
                     <span>TOTAL:</span>
                     <span><?= formatCurrency($invoice['total_amount'], 2) ?></span>
                 </div>
             </div>
         </div>
 
-        <div class="mt-16 text-center border-t border-gray-200 pt-8 font-mono text-[10px] uppercase tracking-widest text-gray-400">
-            <p>Thank you for choosing Arai Moto. All parts carry a standard 1-year warranty unless otherwise stated.</p>
+        <div class="mt-16 text-center border-t border-black/20 pt-8 font-mono text-sm uppercase tracking-widest text-black/50">
+            <p>Thank you for choosing Araii Moto. All parts carry a standard 1-year warranty unless otherwise stated.</p>
             <p class="mt-2">[ END OF TRANSMISSION ]</p>
         </div>
 

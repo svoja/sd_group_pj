@@ -68,7 +68,7 @@ CREATE TABLE `employees` (
 
 INSERT INTO `employees` (`employee_id`, `user_id`, `employee_code`, `name`, `position`, `is_active`, `created_at`) VALUES
 (1, 1, 'EMP-1772078777', 'New Employee', 'Unassigned', 0, '2026-02-26 04:06:17'),
-(2, NULL, 'EMP-2026-6756', 'KEN ARAI', 'Sales Associate', 1, '2026-02-26 04:38:44'),
+(2, NULL, 'EMP-2026-6756', 'KEN ARAII', 'Sales Associate', 1, '2026-02-26 04:38:44'),
 (3, NULL, 'EMP-2026-1345', 'jnkjkjk', 'Procurement Lead', 1, '2026-02-26 05:00:40'),
 (4, 2, 'EMP-1772092360', 'New Employee', 'Unassigned', 1, '2026-02-26 07:52:40'),
 (5, NULL, 'EMP-2026-4868', 'Nangfah', 'Sales Associate', 1, '2026-02-26 08:37:32'),

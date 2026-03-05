@@ -65,60 +65,13 @@ while ($row = $chartResult->fetch_assoc()) {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Terminal | ARAI MOTO</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: { obsidian: { bg: '#020202', surface: '#0a0a0a', edge: 'rgba(255, 0, 0, 0.12)', muted: '#666666' }, premium: '#e11d48' }
-                }
-            }
-        }
-    </script>
+<?php
+$pageTitle = "Client Terminal | ARAII MOTO";
+$extraHead = '<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>';
+include 'partials/head.php';
+?>
 
-    <style>
-        body {
-            background-color: #020202;
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(225, 29, 72, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
-                radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 24px 24px;
-            background-attachment: fixed;
-        }
-
-        .slab::after {
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 50px; height: 50px;
-            background: linear-gradient(225deg, rgba(255,255,255,0.05) 50%, transparent 50%);
-        }
-
-        @keyframes tectonicRise {
-            from { opacity: 0; transform: translateY(40px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .anim-hero { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
-        .stagger-1 { animation: tectonicRise 0.8s 0.1s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
-        .stagger-2 { animation: tectonicRise 0.8s 0.2s forwards cubic-bezier(0.23, 1, 0.32, 1); opacity: 0; }
-        .anim-load { animation: tectonicRise 0.8s forwards ease-out; opacity: 0; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #020202; }
-        ::-webkit-scrollbar-thumb { background: #e11d48; border-radius: 10px; }
-    </style>
-</head>
-
-<body class="bg-obsidian-bg text-white font-sans min-h-screen overflow-x-hidden selection:bg-premium selection:text-white">
+<body class="page-bg-soft bg-white text-black font-sans min-h-screen overflow-x-hidden selection:bg-premium selection:text-white">
 
     <?php include 'partials/nav.php'; ?>
 
@@ -127,26 +80,26 @@ while ($row = $chartResult->fetch_assoc()) {
             <img src="assets/images/full-shot-adult-with-equipment-riding-motorcycle.jpg" 
                 class="w-full h-full object-cover opacity-40 grayscale hover:grayscale-0 transition-all duration-[3000ms] ease-in-out" 
                 alt="Background">
-            <div class="absolute inset-0 bg-gradient-to-t from-obsidian-bg via-transparent to-obsidian-bg/80"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-obsidian-bg/90 via-transparent to-obsidian-bg/90"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-premium/20 blur-[150px] rounded-full"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-white/80 via-white/20 to-white/90"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/25 to-white/90"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-white/40 blur-[150px] rounded-full"></div>
         </div>
 
         <div class="relative z-10 text-center px-8 anim-hero">
-            <p class="text-premium uppercase tracking-[0.8em] text-[10px] mb-6 font-bold drop-shadow-lg">// PRECISION ENGINEERING</p>
-            <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-6 drop-shadow-2xl">
-                ARAI <span class="font-light text-white/50 italic">MOTO</span>
+            <p class="text-premium uppercase tracking-[0.8em] text-sm mb-6 font-bold drop-shadow-lg">// PRECISION ENGINEERING</p>
+            <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-6 text-white drop-shadow-2xl">
+                ARAII <span class="font-light text-white/80 italic">MOTO</span>
             </h1>
 
             <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mt-12">
                 <div class="text-right">
                     <p class="text-white text-sm uppercase tracking-[0.3em] font-bold">Client Terminal</p>
-                    <p class="text-obsidian-muted text-[10px] uppercase tracking-widest mt-1">Authorized Access Granted</p>
+                    <p class="text-white/80 text-sm uppercase tracking-widest mt-1">Authorized Access Granted</p>
                 </div>
                 <div class="h-12 w-px bg-premium hidden md:block"></div>
-                <div class="text-left font-mono text-xs">
+                <div class="text-left font-mono text-sm">
                     <p class="text-premium animate-pulse">[ IDENTITY: <?= htmlspecialchars($name) ?> ]</p>
-                    <p class="text-obsidian-muted uppercase mt-1">Clearance: <?= htmlspecialchars($level) ?></p>
+                    <p class="text-white/80 uppercase mt-1">Clearance: <?= htmlspecialchars($level) ?></p>
                 </div>
             </div>
         </div>
@@ -154,30 +107,30 @@ while ($row = $chartResult->fetch_assoc()) {
 
     <section class="max-w-[1400px] mx-auto px-8 relative z-20 -mt-16 mb-16 stagger-1">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-obsidian-surface border border-obsidian-edge p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
+            <div class="bg-white border border-obsidian-edge p-6 shadow-2xl shadow-black/10 backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-white/5 to-transparent"></div>
-                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Total Operations</p>
+                <p class="text-sm font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Total Operations</p>
                 <div class="flex items-end gap-3">
                     <span class="text-4xl font-black tracking-tighter group-hover:text-premium transition-colors"><?= $total_orders ?></span>
-                    <span class="text-[10px] font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Orders</span>
+                    <span class="text-sm font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Orders</span>
                 </div>
             </div>
 
-            <div class="bg-obsidian-surface border border-obsidian-edge p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
+            <div class="bg-white border border-obsidian-edge p-6 shadow-2xl shadow-black/10 backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-premium/10 to-transparent"></div>
-                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Fleet Investment</p>
+                <p class="text-sm font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Fleet Investment</p>
                 <div class="flex items-end gap-1">
                     <span class="text-xl font-mono text-premium font-bold mb-1">$</span>
-                    <span class="text-4xl font-black tracking-tighter group-hover:text-white transition-colors"><?= number_format($total_spent, 2) ?></span>
+                    <span class="text-4xl font-black tracking-tighter group-hover:text-black transition-colors"><?= number_format($total_spent, 2) ?></span>
                 </div>
             </div>
 
-            <div class="bg-obsidian-surface border <?= $pending_invoices > 0 ? 'border-yellow-500/50' : 'border-obsidian-edge' ?> p-6 shadow-2xl shadow-black backdrop-blur-md relative overflow-hidden group transition-colors">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-<?= $pending_invoices > 0 ? 'yellow-500/10' : 'white/5' ?> to-transparent"></div>
-                <p class="text-[10px] font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Awaiting Clearing</p>
+            <div class="bg-white border <?= $pending_invoices > 0 ? 'border-premium/50' : 'border-obsidian-edge' ?> p-6 shadow-2xl shadow-black/10 backdrop-blur-md relative overflow-hidden group transition-colors">
+                <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-<?= $pending_invoices > 0 ? 'premium/10' : 'white/5' ?> to-transparent"></div>
+                <p class="text-sm font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Awaiting Clearing</p>
                 <div class="flex items-end gap-3">
-                    <span class="text-4xl font-black tracking-tighter <?= $pending_invoices > 0 ? 'text-yellow-500 animate-pulse' : 'text-white' ?>"><?= $pending_invoices ?></span>
-                    <span class="text-[10px] font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Pending Invoices</span>
+                    <span class="text-4xl font-black tracking-tighter <?= $pending_invoices > 0 ? 'text-premium animate-pulse' : 'text-black' ?>"><?= $pending_invoices ?></span>
+                    <span class="text-sm font-mono text-obsidian-muted mb-1 uppercase tracking-widest">Pending Invoices</span>
                 </div>
             </div>
         </div>
@@ -186,31 +139,31 @@ while ($row = $chartResult->fetch_assoc()) {
     <section class="max-w-[1400px] mx-auto px-8 mb-20 stagger-2">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
-            <div class="lg:col-span-1 bg-obsidian-surface border border-obsidian-edge p-6 shadow-2xl shadow-black relative flex flex-col h-[400px]">
-                <div class="absolute top-0 right-0 p-2 font-mono text-[8px] text-premium/30 uppercase tracking-widest">Telemetry</div>
+            <div class="lg:col-span-1 bg-white border border-obsidian-edge p-6 shadow-2xl shadow-black/10 relative flex flex-col h-[400px]">
+                <div class="absolute top-0 right-0 p-2 font-mono text-sm text-premium/30 uppercase tracking-widest">Telemetry</div>
                 <h3 class="text-sm font-black uppercase tracking-widest mb-6 text-premium border-l-2 border-premium pl-3">Investment Trend</h3>
                 
                 <div class="flex-grow w-full h-full relative">
                     <?php if (count($chartData) > 0): ?>
                         <canvas id="spendChart"></canvas>
                     <?php else: ?>
-                        <div class="absolute inset-0 flex items-center justify-center text-obsidian-muted font-mono text-xs uppercase tracking-widest text-center px-4">
+                        <div class="absolute inset-0 flex items-center justify-center text-obsidian-muted font-mono text-sm uppercase tracking-widest text-center px-4">
                             Insufficient Data: Execute purchase operations to populate telemetry matrix.
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
 
-            <div class="lg:col-span-2 bg-obsidian-surface border border-obsidian-edge flex flex-col shadow-2xl shadow-black h-[400px]">
+            <div class="lg:col-span-2 bg-white border border-obsidian-edge flex flex-col shadow-2xl shadow-black/10 h-[400px]">
                 <div class="px-6 py-4 border-b border-obsidian-edge bg-white/[0.02] flex justify-between items-center">
                     <h3 class="text-sm font-black uppercase tracking-widest border-l-2 border-premium pl-3">Recent Operations</h3>
-                    <span class="text-premium font-mono text-[10px] animate-pulse">[ LIVE_FEED ]</span>
+                    <span class="text-premium font-mono text-sm animate-pulse">[ LIVE_FEED ]</span>
                 </div>
 
                 <div class="overflow-y-auto flex-grow">
                     <table class="w-full text-left border-collapse">
-                        <thead class="sticky top-0 bg-obsidian-surface/90 backdrop-blur-sm z-10">
-                            <tr class="text-[9px] uppercase tracking-widest text-obsidian-muted border-b border-obsidian-edge">
+                        <thead class="sticky top-0 bg-white/90 backdrop-blur-sm z-10">
+                            <tr class="text-sm uppercase tracking-widest text-obsidian-muted border-b border-obsidian-edge">
                                 <th class="px-6 py-3">PO Reference</th>
                                 <th class="px-6 py-3">Date</th>
                                 <th class="px-6 py-3 text-right">Amount</th>
@@ -238,23 +191,23 @@ while ($row = $chartResult->fetch_assoc()) {
                             ?>
                             <tr class="group hover:bg-white/[0.02] transition-colors cursor-default">
                                 <td class="px-6 py-4">
-                                    <div class="text-[10px] font-mono font-bold text-white group-hover:text-premium transition-colors">
+                                    <div class="text-sm font-mono font-bold text-black group-hover:text-premium transition-colors">
                                         <?= htmlspecialchars($order['po_reference']) ?>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-[10px] font-mono text-obsidian-muted">
+                                <td class="px-6 py-4 text-sm font-mono text-obsidian-muted">
                                     <?= date('d M Y', strtotime($order['order_date'])) ?>
                                 </td>
-                                <td class="px-6 py-4 text-[11px] font-mono font-bold text-white text-right">
+                                <td class="px-6 py-4 text-sm font-mono font-bold text-black text-right">
                                     $<?= number_format($order['total_amount'], 2) ?>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <?php if ($status === 'PAID'): ?>
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-green-500">CLEARED</span>
+                                        <span class="text-sm font-black uppercase tracking-widest text-premium">CLEARED</span>
                                     <?php elseif ($status === 'PENDING'): ?>
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-yellow-500 animate-pulse">PENDING</span>
+                                        <span class="text-sm font-black uppercase tracking-widest text-premium animate-pulse">PENDING</span>
                                     <?php else: ?>
-                                        <span class="text-[9px] font-black uppercase tracking-widest text-obsidian-muted">PROCESSING</span>
+                                        <span class="text-sm font-black uppercase tracking-widest text-obsidian-muted">PROCESSING</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -263,7 +216,7 @@ while ($row = $chartResult->fetch_assoc()) {
                             else: 
                             ?>
                             <tr>
-                                <td colspan="4" class="px-6 py-10 text-center text-obsidian-muted font-mono text-xs uppercase tracking-[0.2em]">
+                                <td colspan="4" class="px-6 py-10 text-center text-obsidian-muted font-mono text-sm uppercase tracking-[0.2em]">
                                     No transaction history recorded.
                                 </td>
                             </tr>
@@ -280,11 +233,11 @@ while ($row = $chartResult->fetch_assoc()) {
         <div class="flex items-end justify-between mb-12 stagger-2 border-l-4 border-premium pl-6">
             <div>
                 <h2 class="text-4xl font-black tracking-tighter uppercase">Available Components</h2>
-                <p class="text-obsidian-muted font-mono text-xs mt-2 uppercase tracking-widest">
+                <p class="text-obsidian-muted font-mono text-sm mt-2 uppercase tracking-widest">
                     Database: Verified Genuine Parts Only
                 </p>
             </div>
-            <a href="products.php" class="group text-xs uppercase tracking-widest flex items-center gap-4 hover:text-premium transition-colors">
+            <a href="products.php" class="group text-sm uppercase tracking-widest flex items-center gap-4 hover:text-premium transition-colors">
                 Full Catalog <span class="transition-transform group-hover:translate-x-2">——></span>
             </a>
         </div>
@@ -304,8 +257,8 @@ while ($row = $chartResult->fetch_assoc()) {
                     $img_path = "assets/products/" . $img_filename;
                     $hasImage = (!empty($img_filename) && file_exists($img_path));
             ?>
-            <div class="slab stagger-2 group relative bg-obsidian-surface border border-obsidian-edge p-3 overflow-hidden transition-all duration-500 hover:border-premium/40 shadow-xl shadow-black">
-                <div class="aspect-square bg-obsidian-bg border border-obsidian-edge overflow-hidden relative">
+            <div class="slab stagger-2 group relative bg-white border border-obsidian-edge p-3 overflow-hidden transition-all duration-500 hover:border-premium/40 shadow-xl shadow-black/10">
+                <div class="aspect-square bg-white border border-obsidian-edge overflow-hidden relative">
                     <?php if ($hasImage): ?>
                         <img src="<?= $img_path ?>" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="<?= $pName ?>">
                     <?php else: ?>
@@ -315,8 +268,8 @@ while ($row = $chartResult->fetch_assoc()) {
                             </svg>
                         </div>
                     <?php endif; ?>
-                    <div class="absolute bottom-4 left-4 bg-obsidian-bg/80 backdrop-blur-md px-3 py-1 border border-obsidian-edge">
-                        <span class="text-[9px] font-mono tracking-tighter text-obsidian-muted uppercase">Serial: #MOTO-<?= str_pad($pId, 4, '0', STR_PAD_LEFT) ?></span>
+                    <div class="absolute bottom-4 left-4 bg-white/80 backdrop-blur-md px-3 py-1 border border-obsidian-edge">
+                        <span class="text-sm font-mono tracking-tighter text-obsidian-muted uppercase">Serial: #MOTO-<?= str_pad($pId, 4, '0', STR_PAD_LEFT) ?></span>
                     </div>
                 </div>
                 
@@ -325,7 +278,7 @@ while ($row = $chartResult->fetch_assoc()) {
                         <h3 class="text-xl font-bold uppercase tracking-tight group-hover:text-premium transition-colors"><?= $pName ?></h3>
                         <span class="font-mono text-premium text-lg tracking-tighter font-bold">$<?= $pPrice ?></span>
                     </div>
-                    <p class="text-obsidian-muted text-[11px] uppercase tracking-widest mb-8 leading-relaxed line-clamp-2"><?= $pDesc ?></p>
+                    <p class="text-obsidian-muted text-sm uppercase tracking-widest mb-8 leading-relaxed line-clamp-2"><?= $pDesc ?></p>
                 </div>
             </div>
             <?php 
@@ -355,11 +308,11 @@ while ($row = $chartResult->fetch_assoc()) {
                 datasets: [{
                     label: 'Investment ($)',
                     data: <?= json_encode($chartData) ?>,
-                    borderColor: '#e11d48',
+                    borderColor: '#b00020',
                     backgroundColor: gradient,
                     borderWidth: 2,
-                    pointBackgroundColor: '#e11d48',
-                    pointBorderColor: '#0a0a0a',
+                    pointBackgroundColor: '#b00020',
+                    pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
                     pointHoverRadius: 6,
@@ -373,7 +326,7 @@ while ($row = $chartResult->fetch_assoc()) {
                 plugins: {
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: '#0a0a0a',
+                        backgroundColor: '#ffffff',
                         titleFont: { family: "'JetBrains Mono', monospace", size: 10 },
                         bodyFont: { family: "'JetBrains Mono', monospace", size: 12, weight: 'bold' },
                         borderColor: 'rgba(225, 29, 72, 0.3)',
@@ -389,13 +342,13 @@ while ($row = $chartResult->fetch_assoc()) {
                 scales: {
                     x: {
                         grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                        ticks: { font: { family: "'JetBrains Mono', monospace", size: 9 }, color: '#666666' }
+                        ticks: { font: { family: "'JetBrains Mono', monospace", size: 9 }, color: '#374151' }
                     },
                     y: {
                         grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
                         ticks: { 
                             font: { family: "'JetBrains Mono', monospace", size: 9 }, 
-                            color: '#666666',
+                            color: '#374151',
                             callback: function(value) { return '$' + value; }
                         }
                     }

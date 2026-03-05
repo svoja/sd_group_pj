@@ -1,0 +1,209 @@
+:root {
+    --ui-bg: #ffffff;
+    --ui-surface: #ffffff;
+    --ui-text: #000000;
+    --ui-muted: #3f3f46;
+    --ui-border: rgba(0, 0, 0, 0.24);
+    --ui-accent: #c1121f;
+    --ui-track: #ffffff;
+}
+
+body[data-theme="dark"] {
+    --ui-bg: #ffffff;
+    --ui-surface: #ffffff;
+    --ui-text: #000000;
+    --ui-muted: #3f3f46;
+    --ui-border: rgba(0, 0, 0, 0.24);
+    --ui-accent: #e10600;
+    --ui-track: #ffffff;
+}
+
+body[data-theme="mono"] {
+    --ui-bg: #ffffff;
+    --ui-surface: #ffffff;
+    --ui-text: #000000;
+    --ui-muted: #525252;
+    --ui-border: rgba(0, 0, 0, 0.3);
+    --ui-accent: #a40010;
+    --ui-track: #ffffff;
+}
+
+body {
+    background-color: var(--ui-bg) !important;
+    color: var(--ui-text) !important;
+}
+
+body.page-bg-cinematic {
+    background-image: none;
+}
+
+body.page-bg-soft {
+    background-image: none;
+}
+
+.bg-white,
+.bg-white\/95,
+.bg-white\/90,
+.bg-white\/80,
+.bg-white\/50,
+.bg-obsidian-bg,
+.bg-obsidian-surface {
+    background-color: var(--ui-surface) !important;
+}
+
+.text-black,
+.text-black\/50,
+.text-black\/60,
+.text-black\/70,
+.text-black\/80,
+.text-obsidian-muted {
+    color: var(--ui-text) !important;
+}
+
+.text-obsidian-muted {
+    color: var(--ui-muted) !important;
+}
+
+.border-obsidian-edge,
+.border-black\/10,
+.border-black\/20,
+.divide-obsidian-edge,
+.divide-black\/20 {
+    border-color: var(--ui-border) !important;
+}
+
+.text-premium,
+.text-premium\/30,
+.text-premium\/50 {
+    color: var(--ui-accent) !important;
+}
+
+.bg-premium,
+.bg-premium\/10,
+.bg-premium\/20 {
+    background-color: var(--ui-accent) !important;
+}
+
+.border-premium,
+.border-premium\/20,
+.border-premium\/30,
+.border-premium\/50 {
+    border-color: var(--ui-accent) !important;
+}
+
+body[data-btn-size="sm"] :is(button, input[type="submit"], input[type="button"]) {
+    font-size: 0.78rem !important;
+    padding-top: 0.45rem !important;
+    padding-bottom: 0.45rem !important;
+    padding-left: 0.8rem !important;
+    padding-right: 0.8rem !important;
+}
+
+body[data-btn-size="lg"] :is(button, input[type="submit"], input[type="button"]) {
+    font-size: 0.98rem !important;
+    padding-top: 0.95rem !important;
+    padding-bottom: 0.95rem !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+}
+
+body[data-btn-size="sm"] a[class*="px-"][class*="py-"] {
+    font-size: 0.78rem !important;
+    padding-top: 0.45rem !important;
+    padding-bottom: 0.45rem !important;
+}
+
+body[data-btn-size="lg"] a[class*="px-"][class*="py-"] {
+    font-size: 0.98rem !important;
+    padding-top: 0.95rem !important;
+    padding-bottom: 0.95rem !important;
+}
+
+@keyframes tectonicRise {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes scroll-left {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.anim-hero {
+    animation: tectonicRise 0.8s forwards ease-out;
+    opacity: 0;
+}
+
+.stagger-1 {
+    animation: tectonicRise 0.8s 0.1s forwards cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+}
+
+.stagger-2 {
+    animation: tectonicRise 0.8s 0.2s forwards cubic-bezier(0.23, 1, 0.32, 1);
+    opacity: 0;
+}
+
+.anim-load {
+    animation: tectonicRise 0.8s forwards ease-out;
+    opacity: 0;
+}
+
+.animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+}
+
+.animate-marquee {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scroll-left 28s linear infinite;
+}
+
+.slab::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(225deg, rgba(255, 255, 255, 0.05) 50%, transparent 50%);
+}
+
+.clip-badge {
+    clip-path: polygon(0 0, 90% 0, 100% 30%, 100% 100%, 10% 100%, 0 70%);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ui-track) !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ui-accent) !important;
+    border-radius: 10px;
+}
