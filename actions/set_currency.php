@@ -11,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['currency'])) {
     }
 
     // Redirect back to the exact page they were on
-    $return_url = $_POST['return_url'] ?? '../dashboard.php';
+    $return_url = $_POST['return_url'] ?? '../index.php';
     header("Location: " . $return_url);
     exit;
 } else {
-    header("Location: ../dashboard.php");
+    header("Location: ../index.php");
     exit;
 }
 ?>

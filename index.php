@@ -25,6 +25,12 @@ $name = $customerProfile['contact_name'] ?? 'Valued Customer';
 $level = $customerProfile['membership_level'] ?? 'STANDARD';
 $code = $customerProfile['customer_code'] ?? 'N/A';
 $hasCustomerProfile = !empty($customerProfile) && !empty($customerProfile['customer_id']);
+$currencyCode = $_SESSION['currency'] ?? 'USD';
+$currencyRates = ['USD' => 1.00, 'THB' => 34.50, 'JPY' => 150.20];
+$currencySymbols = ['USD' => '$', 'THB' => 'THB ', 'JPY' => 'JPY '];
+$chartRate = $currencyRates[$currencyCode] ?? 1.00;
+$chartSymbol = $currencySymbols[$currencyCode] ?? '$';
+$chartDecimals = $currencyCode === 'JPY' ? 0 : 2;
 
 // --- FETCH DASHBOARD METRICS ---
 if ($hasCustomerProfile) {
@@ -143,10 +149,7 @@ include 'partials/head.php';
             <div class="bg-white border border-obsidian-edge p-6 shadow-2xl shadow-black/10 backdrop-blur-md relative overflow-hidden group hover:border-premium/50 transition-colors">
                 <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-premium/10 to-transparent"></div>
                 <p class="text-sm font-mono uppercase tracking-[0.3em] text-obsidian-muted mb-2">Fleet Investment</p>
-                <div class="flex items-end gap-1">
-                    <span class="text-xl font-mono text-premium font-bold mb-1">$</span>
-                    <span class="text-4xl font-black tracking-tighter group-hover:text-black transition-colors"><?= number_format($total_spent, 2) ?></span>
-                </div>
+                <div class="text-4xl font-black tracking-tighter group-hover:text-black transition-colors"><?= formatCurrency($total_spent) ?></div>
             </div>
 
             <div class="bg-white border <?= $pending_invoices > 0 ? 'border-premium/50' : 'border-obsidian-edge' ?> p-6 shadow-2xl shadow-black/10 backdrop-blur-md relative overflow-hidden group transition-colors">
@@ -234,7 +237,7 @@ include 'partials/head.php';
                                     <?= date('d M Y', strtotime($order['order_date'])) ?>
                                 </td>
                                 <td class="px-6 py-4 text-sm font-mono font-bold text-black text-right">
-                                    $<?= number_format($order['total_amount'], 2) ?>
+                                    <?= formatCurrency($order['total_amount']) ?>
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <?php if ($status === 'PAID'): ?>
@@ -342,7 +345,7 @@ include 'partials/head.php';
                 labels: <?= json_encode($chartLabels) ?>,
                 datasets: [{
                     label: 'Investment ($)',
-                    data: <?= json_encode($chartData) ?>,
+                    data: <?= json_encode($chartData) ?>.map(v => v * <?= json_encode($chartRate) ?>),
                     borderColor: '#b00020',
                     backgroundColor: gradient,
                     borderWidth: 2,
@@ -372,7 +375,10 @@ include 'partials/head.php';
                         displayColors: false,
                         callbacks: {
                             label: function(context) {
-                                return '$' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2});
+                                return <?= json_encode($chartSymbol) ?> + context.parsed.y.toLocaleString(undefined, {
+                                    minimumFractionDigits: <?= json_encode($chartDecimals) ?>,
+                                    maximumFractionDigits: <?= json_encode($chartDecimals) ?>
+                                });
                             }
                         }
                     }
@@ -387,7 +393,12 @@ include 'partials/head.php';
                         ticks: { 
                             font: { family: "'JetBrains Mono', monospace", size: 9 }, 
                             color: '#374151',
-                            callback: function(value) { return '$' + value; }
+                            callback: function(value) {
+                                return <?= json_encode($chartSymbol) ?> + Number(value).toLocaleString(undefined, {
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: <?= json_encode($chartDecimals) ?>
+                                });
+                            }
                         }
                     }
                 }
