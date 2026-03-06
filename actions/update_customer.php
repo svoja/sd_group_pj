@@ -13,6 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contact_name = trim($_POST['contact_name']);
     $membership_level = trim($_POST['membership_level']);
     $address = trim($_POST['address']);
+    $allowed_tiers = ['STANDARD', 'PREMIUM'];
+    if (!in_array($membership_level, $allowed_tiers, true)) {
+        $membership_level = 'STANDARD';
+    }
 
     // Validation
     if (empty($contact_name) || $customer_id <= 0) {

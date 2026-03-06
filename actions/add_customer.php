@@ -12,6 +12,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['contact_name']);
     $tier = trim($_POST['membership_level']);
     $address = trim($_POST['address']);
+    $allowed_tiers = ['STANDARD', 'PREMIUM'];
+    if (!in_array($tier, $allowed_tiers, true)) {
+        $tier = 'STANDARD';
+    }
 
     // AUTOMATE THE CLIENT CODE (Format: CLI-2026-8492)
     $code = "CLI-" . date("Y") . "-" . rand(1000, 9999);

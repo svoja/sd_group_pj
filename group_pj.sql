@@ -34,7 +34,7 @@ CREATE TABLE `customers` (
   `customer_code` varchar(20) NOT NULL,
   `contact_name` varchar(150) NOT NULL,
   `address` text NOT NULL,
-  `membership_level` enum('STANDARD','PREMIUM','ELITE') DEFAULT 'STANDARD',
+  `membership_level` enum('STANDARD','PREMIUM') DEFAULT 'STANDARD',
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -43,7 +43,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `user_id`, `customer_code`, `contact_name`, `address`, `membership_level`, `created_at`) VALUES
-(2, NULL, 'CLI-2026-1806', 'Ryu', '185', 'ELITE', '2026-02-26 05:55:07'),
+(2, NULL, 'CLI-2026-1806', 'Ryu', '185', 'PREMIUM', '2026-02-26 05:55:07'),
 (3, NULL, 'CLI-2026-6114', 'Ryu', 'gjbjkk', 'PREMIUM', '2026-02-26 08:47:13');
 
 -- --------------------------------------------------------

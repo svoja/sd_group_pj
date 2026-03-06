@@ -58,7 +58,7 @@ include 'partials/head.php';
                         <label class="block text-sm uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Membership Tier</label>
                         <select name="membership_level" class="w-full bg-white border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-black appearance-none">
                             <?php 
-                            $tiers = ["STANDARD", "PREMIUM", "ELITE"];
+                            $tiers = ["STANDARD", "PREMIUM"];
                             foreach ($tiers as $tier) {
                                 $selected = ($customer['membership_level'] === $tier) ? 'selected' : '';
                                 echo "<option value='$tier' $selected>$tier</option>";

@@ -84,8 +84,6 @@ include 'partials/head.php';
                         <label class="block text-sm uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Payment Method</label>
                         <select name="payment_method" required class="w-full bg-white border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium text-black appearance-none">
                             <option value="CASH" <?= $invoice['payment_method'] === 'CASH' ? 'selected' : '' ?>>Cash</option>
-                            <option value="CARD" <?= $invoice['payment_method'] === 'CARD' ? 'selected' : '' ?>>Credit/Debit Card</option>
-                            <option value="TRANSFER" <?= $invoice['payment_method'] === 'TRANSFER' ? 'selected' : '' ?>>Bank Transfer</option>
                         </select>
                     </div>
                     <div>

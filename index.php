@@ -24,42 +24,66 @@ $customer_id = $customerProfile['customer_id'] ?? 0;
 $name = $customerProfile['contact_name'] ?? 'Valued Customer';
 $level = $customerProfile['membership_level'] ?? 'STANDARD';
 $code = $customerProfile['customer_code'] ?? 'N/A';
+$hasCustomerProfile = !empty($customerProfile) && !empty($customerProfile['customer_id']);
 
 // --- FETCH DASHBOARD METRICS ---
-$statsQuery = "
-    SELECT 
-        (SELECT COUNT(*) FROM sale_orders WHERE customer_id = ?) AS total_orders,
-        (SELECT SUM(total_amount) FROM sale_orders WHERE customer_id = ?) AS total_spent,
-        (SELECT COUNT(*) FROM invoices WHERE customer_id = ? AND payment_status = 'PENDING') AS pending_invoices
-";
-$stmtStats = $mysqli->prepare($statsQuery);
-$stmtStats->bind_param("iii", $customer_id, $customer_id, $customer_id);
-$stmtStats->execute();
-$stats = $stmtStats->get_result()->fetch_assoc();
+if ($hasCustomerProfile) {
+    $statsQuery = "
+        SELECT 
+            (SELECT COUNT(*) FROM sale_orders WHERE customer_id = ?) AS total_orders,
+            (SELECT SUM(total_amount) FROM sale_orders WHERE customer_id = ?) AS total_spent,
+            (SELECT COUNT(*) FROM invoices WHERE customer_id = ? AND payment_status = 'PENDING') AS pending_invoices
+    ";
+    $stmtStats = $mysqli->prepare($statsQuery);
+    $stmtStats->bind_param("iii", $customer_id, $customer_id, $customer_id);
+    $stmtStats->execute();
+    $stats = $stmtStats->get_result()->fetch_assoc();
+} else {
+    $statsQuery = "
+        SELECT 
+            (SELECT COUNT(*) FROM sale_orders) AS total_orders,
+            (SELECT SUM(total_amount) FROM sale_orders) AS total_spent,
+            (SELECT COUNT(*) FROM invoices WHERE payment_status = 'PENDING') AS pending_invoices
+    ";
+    $stats = $mysqli->query($statsQuery)->fetch_assoc();
+}
 
 $total_orders = $stats['total_orders'] ?? 0;
 $total_spent = $stats['total_spent'] ?? 0.00;
 $pending_invoices = $stats['pending_invoices'] ?? 0;
 
 // --- NEW: FETCH GRAPH DATA (Last 6 Active Months) ---
-$chartQuery = "
-    SELECT DATE_FORMAT(order_date, '%b %Y') as month_label, SUM(total_amount) as monthly_total 
-    FROM sale_orders 
-    WHERE customer_id = ? 
-    GROUP BY YEAR(order_date), MONTH(order_date), month_label 
-    ORDER BY YEAR(order_date) ASC, MONTH(order_date) ASC 
-    LIMIT 6
-";
-$stmtChart = $mysqli->prepare($chartQuery);
-$stmtChart->bind_param("i", $customer_id);
-$stmtChart->execute();
-$chartResult = $stmtChart->get_result();
+$chartResult = null;
+if ($hasCustomerProfile) {
+    $chartQuery = "
+        SELECT DATE_FORMAT(order_date, '%b %Y') as month_label, SUM(total_amount) as monthly_total 
+        FROM sale_orders 
+        WHERE customer_id = ? 
+        GROUP BY YEAR(order_date), MONTH(order_date), month_label 
+        ORDER BY YEAR(order_date) DESC, MONTH(order_date) DESC 
+        LIMIT 6
+    ";
+    $stmtChart = $mysqli->prepare($chartQuery);
+    $stmtChart->bind_param("i", $customer_id);
+    $stmtChart->execute();
+    $chartResult = $stmtChart->get_result();
+} else {
+    $chartQuery = "
+        SELECT DATE_FORMAT(order_date, '%b %Y') as month_label, SUM(total_amount) as monthly_total 
+        FROM sale_orders 
+        GROUP BY YEAR(order_date), MONTH(order_date), month_label 
+        ORDER BY YEAR(order_date) DESC, MONTH(order_date) DESC 
+        LIMIT 6
+    ";
+    $chartResult = $mysqli->query($chartQuery);
+}
 
 $chartLabels = [];
 $chartData = [];
 while ($row = $chartResult->fetch_assoc()) {
-    $chartLabels[] = strtoupper($row['month_label']);
-    $chartData[] = (float)$row['monthly_total'];
+    // We fetch latest months DESC, then unshift to show chart left->right in time.
+    array_unshift($chartLabels, strtoupper($row['month_label']));
+    array_unshift($chartData, (float)$row['monthly_total']);
 }
 ?>
 
@@ -87,19 +111,19 @@ include 'partials/head.php';
 
         <div class="relative z-10 text-center px-8 anim-hero">
             <p class="text-premium uppercase tracking-[0.8em] text-sm mb-6 font-bold drop-shadow-lg">// PRECISION ENGINEERING</p>
-            <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-6 text-white drop-shadow-2xl">
-                ARAII <span class="font-light text-white/80 italic">MOTO</span>
+            <h1 class="text-7xl md:text-[10rem] font-black tracking-tighter uppercase leading-[0.8] mb-6 text-black drop-shadow-2xl">
+                ARAII <span class="font-light text-black/80 italic">MOTO</span>
             </h1>
 
             <div class="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 mt-12">
                 <div class="text-right">
-                    <p class="text-white text-sm uppercase tracking-[0.3em] font-bold">Client Terminal</p>
-                    <p class="text-white/80 text-sm uppercase tracking-widest mt-1">Authorized Access Granted</p>
+                    <p class="text-black text-sm uppercase tracking-[0.3em] font-bold">Client Terminal</p>
+                    <p class="text-black/80 text-sm uppercase tracking-widest mt-1">Authorized Access Granted</p>
                 </div>
                 <div class="h-12 w-px bg-premium hidden md:block"></div>
                 <div class="text-left font-mono text-sm">
-                    <p class="text-premium animate-pulse">[ IDENTITY: <?= htmlspecialchars($name) ?> ]</p>
-                    <p class="text-white/80 uppercase mt-1">Clearance: <?= htmlspecialchars($level) ?></p>
+                    <p class="text-black animate-pulse">[ IDENTITY: <?= htmlspecialchars($name) ?> ]</p>
+                    <p class="text-black/80 uppercase mt-1">Clearance: <?= htmlspecialchars($level) ?></p>
                 </div>
             </div>
         </div>
@@ -172,18 +196,29 @@ include 'partials/head.php';
                         </thead>
                         <tbody class="divide-y divide-obsidian-edge">
                             <?php
-                            $orderHistoryQuery = "
-                                SELECT o.order_id, o.po_reference, o.order_date, o.total_amount, i.payment_status
-                                FROM sale_orders o
-                                LEFT JOIN invoices i ON o.order_id = i.order_id
-                                WHERE o.customer_id = ?
-                                ORDER BY o.order_date DESC
-                                LIMIT 10
-                            ";
-                            $stmtHistory = $mysqli->prepare($orderHistoryQuery);
-                            $stmtHistory->bind_param("i", $customer_id);
-                            $stmtHistory->execute();
-                            $historyResult = $stmtHistory->get_result();
+                            if ($hasCustomerProfile) {
+                                $orderHistoryQuery = "
+                                    SELECT o.order_id, o.po_reference, o.order_date, o.total_amount, i.payment_status
+                                    FROM sale_orders o
+                                    LEFT JOIN invoices i ON o.order_id = i.order_id
+                                    WHERE o.customer_id = ?
+                                    ORDER BY o.order_date DESC
+                                    LIMIT 10
+                                ";
+                                $stmtHistory = $mysqli->prepare($orderHistoryQuery);
+                                $stmtHistory->bind_param("i", $customer_id);
+                                $stmtHistory->execute();
+                                $historyResult = $stmtHistory->get_result();
+                            } else {
+                                $orderHistoryQuery = "
+                                    SELECT o.order_id, o.po_reference, o.order_date, o.total_amount, i.payment_status
+                                    FROM sale_orders o
+                                    LEFT JOIN invoices i ON o.order_id = i.order_id
+                                    ORDER BY o.order_date DESC
+                                    LIMIT 10
+                                ";
+                                $historyResult = $mysqli->query($orderHistoryQuery);
+                            }
 
                             if ($historyResult->num_rows > 0):
                                 while($order = $historyResult->fetch_assoc()):
@@ -327,10 +362,13 @@ include 'partials/head.php';
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#ffffff',
+                        titleColor: '#111827',
+                        bodyColor: '#111827',
                         titleFont: { family: "'JetBrains Mono', monospace", size: 10 },
                         bodyFont: { family: "'JetBrains Mono', monospace", size: 12, weight: 'bold' },
                         borderColor: 'rgba(225, 29, 72, 0.3)',
                         borderWidth: 1,
+                        padding: 10,
                         displayColors: false,
                         callbacks: {
                             label: function(context) {

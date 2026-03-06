@@ -10,7 +10,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['role'] !== 'employee') {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoice_id = intval($_POST['invoice_id']);
     $invoice_date = trim($_POST['invoice_date']);
-    $payment_method = trim($_POST['payment_method']);
+    $payment_method = 'CASH';
     $payment_status = trim($_POST['payment_status']);
 
     if ($invoice_id <= 0 || empty($invoice_date)) {

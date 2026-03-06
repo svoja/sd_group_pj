@@ -69,8 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $membership_discount = 0.00;
     if ($orderData['membership_level'] === 'PREMIUM') {
         $membership_discount = $new_subtotal * 0.05; // 5% off for Premium
-    } elseif ($orderData['membership_level'] === 'ELITE') {
-        $membership_discount = $new_subtotal * 0.10; // 10% off for Elite
     }
 
     // --- NEW: 10% AUTOMATIC VOLUME DISCOUNT ---

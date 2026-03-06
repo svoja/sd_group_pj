@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $order_id = intval($_POST['order_id']);
     $invoice_date = trim($_POST['invoice_date']);
-    $payment_method = trim($_POST['payment_method']);
+    $payment_method = 'CASH';
     $payment_status = trim($_POST['payment_status']);
 
     if ($order_id <= 0) {

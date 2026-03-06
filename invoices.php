@@ -111,8 +111,6 @@ include 'partials/head.php';
                                 <label class="block text-sm uppercase tracking-[0.2em] text-obsidian-muted mb-2 font-bold">Payment Method</label>
                                 <select name="payment_method" required class="w-full bg-white border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium text-black appearance-none">
                                     <option value="CASH">Cash</option>
-                                    <option value="CARD">Credit/Debit Card</option>
-                                    <option value="TRANSFER">Bank Transfer</option>
                                 </select>
                             </div>
                             <div>
@@ -244,11 +242,11 @@ include 'partials/head.php';
 
                                 <td class="px-4 py-4 text-center">
                                     <?php if($inv['payment_status'] === 'PAID'): ?>
-                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/10 border border-premium/20 text-premium text-sm font-black uppercase tracking-widest">
+                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/15 border border-premium/40 text-black text-sm font-black uppercase tracking-widest">
                                             PAID
                                         </span>
                                     <?php else: ?>
-                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/10 border border-premium/20 text-premium text-sm font-black uppercase tracking-widest animate-pulse">
+                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/15 border border-premium/40 text-black text-sm font-black uppercase tracking-widest animate-pulse">
                                             PENDING
                                         </span>
                                     <?php endif; ?>

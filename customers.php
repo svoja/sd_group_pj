@@ -67,7 +67,6 @@ include 'partials/head.php';
                             <select name="membership_level" class="w-full bg-white border border-obsidian-edge px-4 py-3 text-sm font-mono focus:outline-none focus:border-premium transition-colors text-black appearance-none">
                                 <option value="STANDARD">Standard</option>
                                 <option value="PREMIUM">Premium</option>
-                                <option value="ELITE">Elite</option>
                             </select>
                         </div>
 
@@ -130,8 +129,8 @@ include 'partials/head.php';
                                     </td>
 
                                     <td class="px-6 py-5">
-                                        <?php if($customer['membership_level'] === 'PREMIUM' || $customer['membership_level'] === 'ELITE'): ?>
-                                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/10 border border-premium/30 text-premium text-sm font-black uppercase tracking-widest shadow-[0_0_10px_rgba(225,29,72,0.1)]">
+                                        <?php if($customer['membership_level'] === 'PREMIUM'): ?>
+                                            <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/15 border border-premium/40 text-black text-sm font-black uppercase tracking-widest shadow-[0_0_10px_rgba(225,29,72,0.1)]">
                                                 <?= htmlspecialchars($customer['membership_level']) ?>
                                             </span>
                                         <?php else: ?>
