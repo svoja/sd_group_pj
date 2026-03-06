@@ -68,6 +68,9 @@ include 'partials/head.php';
                         if ($_GET['status'] == 'item_updated') echo "[ SYS: QUANTITY_RECALIBRATED ]";
                         if ($_GET['status'] == 'item_removed') echo "[ SYS: COMPONENT_PURGED ]";
                         if ($_GET['status'] == 'stock_error') echo "<span class='text-red-500'>[ ERROR: INSUFFICIENT_WAREHOUSE_STOCK ]</span>";
+                        if ($_GET['status'] == 'invalid_input') echo "<span class='text-red-500'>[ ERROR: INVALID_INPUT_PAYLOAD ]</span>";
+                        if ($_GET['status'] == 'item_not_found') echo "<span class='text-red-500'>[ ERROR: ORDER_ITEM_NOT_FOUND ]</span>";
+                        if ($_GET['status'] == 'db_error') echo "<span class='text-red-500'>[ ERROR: DATABASE_SYNC_FAILURE ]</span>";
                     ?>
                 </div>
             <?php endif; ?>
@@ -163,9 +166,9 @@ include 'partials/head.php';
                                         <input type="hidden" name="detail_id" value="<?= $item['detail_id'] ?>">
                                         <input type="hidden" name="order_id" value="<?= $order_id ?>">
                                         <input type="number" name="quantity" min="1" value="<?= $item['quantity'] ?>" 
-                                               class="w-16 bg-white border border-obsidian-edge text-center py-1 text-sm font-mono text-black focus:border-premium focus:outline-none">
-                                        <button type="submit" class="text-sm font-black uppercase tracking-widest text-obsidian-muted hover:text-black transition-colors">
-                                            Updt
+                                               class="w-20 bg-white border border-obsidian-edge text-center py-2 text-sm font-mono text-black focus:border-premium focus:outline-none">
+                                        <button type="submit" class="px-3 py-2 bg-premium text-white border border-premium text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
+                                            Update
                                         </button>
                                     </form>
                                 </td>

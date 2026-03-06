@@ -220,7 +220,7 @@ include 'partials/head.php';
                                             </a>
 
                                             <a href="order_terminal.php?id=<?= $order['order_id'] ?>" 
-                                               class="inline-block px-4 py-2 border <?= $itemCount === 0 ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-black animate-pulse' : 'border-premium text-premium hover:bg-premium hover:text-black' ?> text-sm font-black uppercase tracking-widest transition-colors">
+                                               class="inline-block px-4 py-2 border <?= $itemCount === 0 ? 'border-red-600 text-red-600 hover:bg-red-600 hover:text-black animate-pulse' : 'border-premium text-premium hover:border-red-600 hover:bg-red-600 hover:text-red-100' ?> text-sm font-black uppercase tracking-widest transition-colors">
                                                 <?= $itemCount === 0 ? 'Add Parts' : 'Modify Cart' ?>
                                             </a>
 

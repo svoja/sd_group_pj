@@ -12,7 +12,6 @@ require_once "config/database.php";
 
 $user_id = $_SESSION['user_id'];
 $email = $_SESSION['email'];
-$role = $_SESSION['role'];
 // Fetch Customer Profile
 $stmt = $mysqli->prepare("SELECT customer_id, customer_code, contact_name, address, membership_level FROM customers WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
@@ -25,6 +24,7 @@ $name = $customerProfile['contact_name'] ?? 'Valued Customer';
 $level = $customerProfile['membership_level'] ?? 'STANDARD';
 $code = $customerProfile['customer_code'] ?? 'N/A';
 $hasCustomerProfile = !empty($customerProfile) && !empty($customerProfile['customer_id']);
+$isCustomerView = $hasCustomerProfile;
 $currencyCode = $_SESSION['currency'] ?? 'USD';
 $currencyRates = ['USD' => 1.00, 'THB' => 34.50, 'JPY' => 150.20];
 $currencySymbols = ['USD' => '$', 'THB' => 'THB ', 'JPY' => 'JPY '];
@@ -33,7 +33,7 @@ $chartSymbol = $currencySymbols[$currencyCode] ?? '$';
 $chartDecimals = $currencyCode === 'JPY' ? 0 : 2;
 
 // --- FETCH DASHBOARD METRICS ---
-if ($hasCustomerProfile) {
+if ($isCustomerView) {
     $statsQuery = "
         SELECT 
             (SELECT COUNT(*) FROM sale_orders WHERE customer_id = ?) AS total_orders,
@@ -60,7 +60,7 @@ $pending_invoices = $stats['pending_invoices'] ?? 0;
 
 // --- NEW: FETCH GRAPH DATA (Last 6 Active Months) ---
 $chartResult = null;
-if ($hasCustomerProfile) {
+if ($isCustomerView) {
     $chartQuery = "
         SELECT DATE_FORMAT(order_date, '%b %Y') as month_label, SUM(total_amount) as monthly_total 
         FROM sale_orders 
@@ -199,13 +199,13 @@ include 'partials/head.php';
                         </thead>
                         <tbody class="divide-y divide-obsidian-edge">
                             <?php
-                            if ($hasCustomerProfile) {
+                            if ($isCustomerView) {
                                 $orderHistoryQuery = "
                                     SELECT o.order_id, o.po_reference, o.order_date, o.total_amount, i.payment_status
                                     FROM sale_orders o
                                     LEFT JOIN invoices i ON o.order_id = i.order_id
                                     WHERE o.customer_id = ?
-                                    ORDER BY o.order_date DESC
+                                    ORDER BY o.order_date DESC, o.order_id DESC
                                     LIMIT 10
                                 ";
                                 $stmtHistory = $mysqli->prepare($orderHistoryQuery);
@@ -217,7 +217,7 @@ include 'partials/head.php';
                                     SELECT o.order_id, o.po_reference, o.order_date, o.total_amount, i.payment_status
                                     FROM sale_orders o
                                     LEFT JOIN invoices i ON o.order_id = i.order_id
-                                    ORDER BY o.order_date DESC
+                                    ORDER BY o.order_date DESC, o.order_id DESC
                                     LIMIT 10
                                 ";
                                 $historyResult = $mysqli->query($orderHistoryQuery);
@@ -291,20 +291,30 @@ include 'partials/head.php';
                     $pPrice = number_format($product['selling_price'], 2);
                     $pDesc = htmlspecialchars($product['product_description']);
                     $pId = $product['product_id'];
-                    $img_filename = $product['image_path'] ?? ''; 
-                    $img_path = "assets/products/" . $img_filename;
-                    $hasImage = (!empty($img_filename) && file_exists($img_path));
+                    $img_filename = trim((string)($product['image_path'] ?? ''));
+                    $img_path = '';
+                    $fallback_img = 'assets/images/herostrike.jpg';
+                    $hasImage = false;
+
+                    if ($img_filename !== '') {
+                        // Accept both raw filenames and legacy stored relative paths.
+                        $normalizedImg = ltrim(str_replace('\\', '/', $img_filename), '/');
+                        if (strpos($normalizedImg, 'assets/') === 0) {
+                            $img_path = $normalizedImg;
+                        } elseif (strpos($normalizedImg, 'images/products/') === 0) {
+                            $img_path = 'assets/' . $normalizedImg;
+                        } else {
+                            $img_path = 'assets/images/products/' . $normalizedImg;
+                        }
+                        $hasImage = file_exists($img_path);
+                    }
             ?>
             <div class="slab stagger-2 group relative bg-white border border-obsidian-edge p-3 overflow-hidden transition-all duration-500 hover:border-premium/40 shadow-xl shadow-black/10">
                 <div class="aspect-square bg-white border border-obsidian-edge overflow-hidden relative">
                     <?php if ($hasImage): ?>
                         <img src="<?= $img_path ?>" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" alt="<?= $pName ?>">
                     <?php else: ?>
-                        <div class="absolute inset-0 flex items-center justify-center text-obsidian-muted/20 group-hover:text-premium/20 transition-colors">
-                            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
-                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
-                            </svg>
-                        </div>
+                        <img src="<?= $fallback_img ?>" class="w-full h-full object-cover opacity-60 grayscale group-hover:opacity-85 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700" alt="Default product image">
                     <?php endif; ?>
                     <div class="absolute bottom-4 left-4 bg-white/80 backdrop-blur-md px-3 py-1 border border-obsidian-edge">
                         <span class="text-sm font-mono tracking-tighter text-obsidian-muted uppercase">Serial: #MOTO-<?= str_pad($pId, 4, '0', STR_PAD_LEFT) ?></span>
