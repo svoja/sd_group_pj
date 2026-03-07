@@ -288,7 +288,7 @@ include 'partials/head.php';
             if ($productResult && $productResult->num_rows > 0):
                 while($product = $productResult->fetch_assoc()):
                     $pName = htmlspecialchars($product['product_name']);
-                    $pPrice = number_format($product['selling_price'], 2);
+                    $pPrice = formatCurrency((float)$product['selling_price']);
                     $pDesc = htmlspecialchars($product['product_description']);
                     $pId = $product['product_id'];
                     $img_filename = trim((string)($product['image_path'] ?? ''));
@@ -324,7 +324,7 @@ include 'partials/head.php';
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="text-xl font-bold uppercase tracking-tight group-hover:text-premium transition-colors"><?= $pName ?></h3>
-                        <span class="font-mono text-premium text-lg tracking-tighter font-bold">$<?= $pPrice ?></span>
+                        <span class="font-mono text-premium text-lg tracking-tighter font-bold"><?= $pPrice ?></span>
                     </div>
                     <p class="text-obsidian-muted text-sm uppercase tracking-widest mb-8 leading-relaxed line-clamp-2"><?= $pDesc ?></p>
                 </div>

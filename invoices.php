@@ -242,7 +242,7 @@ include 'partials/head.php';
 
                                 <td class="px-4 py-4 text-center">
                                     <?php if($inv['payment_status'] === 'PAID'): ?>
-                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-premium/15 border border-premium/40 text-black text-sm font-black uppercase tracking-widest">
+                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-white border border-black/20 text-black text-sm font-black uppercase tracking-widest">
                                             PAID
                                         </span>
                                     <?php else: ?>

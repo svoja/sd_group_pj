@@ -52,10 +52,6 @@ body.page-bg-soft {
 }
 
 .text-black,
-.text-black\/50,
-.text-black\/60,
-.text-black\/70,
-.text-black\/80,
 .text-obsidian-muted {
     color: var(--ui-text) !important;
 }
@@ -73,21 +69,17 @@ body.page-bg-soft {
 }
 
 .text-premium,
-.text-premium\/30,
-.text-premium\/50 {
+.text-premium {
     color: var(--ui-accent) !important;
 }
 
 .bg-premium,
-.bg-premium\/10,
-.bg-premium\/20 {
+.bg-premium {
     background-color: var(--ui-accent) !important;
 }
 
 .border-premium,
-.border-premium\/20,
-.border-premium\/30,
-.border-premium\/50 {
+.border-premium {
     border-color: var(--ui-accent) !important;
 }
 

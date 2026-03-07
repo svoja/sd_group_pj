@@ -69,8 +69,8 @@ include 'partials/head.php';
 ?>
 <body class="font-sans antialiased">
 
-    <div class="no-print text-center py-6 bg-[#ffffff] border-b border-[#b00020]/30">
-        <button onclick="window.print()" class="bg-[#b00020] text-white px-8 py-3 text-sm font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-colors">
+    <div class="no-print text-center py-6 bg-white border-b border-premium/30">
+        <button onclick="window.print()" class="bg-premium text-white px-8 py-3 text-sm font-black uppercase tracking-[0.3em] hover:bg-white hover:text-black transition-colors">
             [ Print Document ]
         </button>
         <button onclick="window.close()" class="ml-4 border border-black/20 text-black/50 px-8 py-3 text-sm font-black uppercase tracking-[0.3em] hover:text-black transition-colors">
